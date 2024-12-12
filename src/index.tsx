@@ -1,10 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { Startseite } from './components/Startseite'; // Hier importierst du die Komponente ohne 'default'
+import ReactDOM from 'react-dom/client'; // Hier importierst du die Komponente ohne 'default'
+import App from 'App';
 
-ReactDOM.render(
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error("Das Root-Element mit der ID 'root' wurde nicht gefunden.");
+}
+const root = ReactDOM.createRoot(rootElement);
+
+root.render(
   <React.StrictMode>
-    <Startseite /> {/* Lade die Startseite */}
+    <App /> {/* Lade die Startseite */}
   </React.StrictMode>,
-  document.getElementById('root') // Verweise auf das HTML-Element, in dem die App gerendert wird
 );

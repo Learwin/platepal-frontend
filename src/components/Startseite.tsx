@@ -10,7 +10,7 @@ import LogoBild from '../assets/images/Logo.png';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import für Bootstrap CSS
 
 
-export const Startseite = () => {
+export default function Startseite () {
   return (
     <div className={styles.desktop1}>
       <img className={styles.hintergrund} src={HintergrundBild} alt="Hintergrundbild" />
