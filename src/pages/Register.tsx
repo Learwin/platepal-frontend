@@ -3,19 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../Anmeldung.module.css'; // Anpassen für den richtigen Pfad
 import Logo from '../assets/images/Logo.png'; // Ersetzen durch den richtigen Pfad
 
-const Anmeldung = () => {
-    const [mail, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+const Register = () => {
+    const [emailAdresse, setEmail] = useState('');
+    const [passwort, setPassword] = useState('');
+    const [username, setUser] = useState('');
     const navigate = useNavigate();
 
     const handleNavigate = (): void => {
-        navigate("/home"); // Navigiert zur Anmeldeseite
+        navigate("/home"); // Navigiert zur Verwaltung
         console.log("test");
-    };
-
-    const handleRegister= (): void => {
-        navigate("/register"); // Navigiert zur Anmeldeseite
-        console.log("test");
+        console.log("Yaaayyy")
     };
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -23,19 +20,19 @@ const Anmeldung = () => {
         event.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8080/login', {
+            const response = await fetch('http://localhost:8080/user', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ mail, password }),
+                body: JSON.stringify({ emailAdresse, passwort, username }),
             });
 
             if (response.ok) {
-                console.log("Anmeldung ok");
+                console.log("Registrierung ok");
                 handleNavigate(); // Redirect nach erfolgreicher Anmeldung
             } else {
-                console.error('Login fehlgeschlagen');
+                console.error('Registrierung fehlgeschlagen');
                 // handle error, e.g., show a message to the user
             }
         } catch (error) {
@@ -45,7 +42,7 @@ const Anmeldung = () => {
 
     return (
         <div className={styles.anmeldeContainer}>
-            <img className={styles.logo} src={Logo} alt="Logo" onClick={handleNavigate}/>
+            <img className={styles.logo} src={Logo} alt="Logo" />
             <div className={styles.formContainer}>
                 <div className={styles.formGroup}>
                     <label htmlFor="email" className={styles.label}>E-Mail-Adresse</label>
@@ -53,8 +50,18 @@ const Anmeldung = () => {
                         id="email" 
                         type="email" 
                         className={styles.inputField}
-                        value={mail}
+                        value={emailAdresse}
                         onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="user" className={styles.user}>Benutzername</label>
+                    <input 
+                        id="user" 
+                        type="user" 
+                        value={username}
+                        className={styles.inputField}
+                        onChange={(e) => setUser(e.target.value)}
                     />
                 </div>
                 <div className={styles.formGroup}>
@@ -63,21 +70,18 @@ const Anmeldung = () => {
                         id="password" 
                         type="password" 
                         className={styles.inputField}
-                        value={password}
+                        value={passwort}
                         onChange={(e) => setPassword(e.target.value)}
                     /> 
-                    <a href="/forgot-password" className={styles.forgotPassword}>Passwort vergessen?</a>
                 </div>
                 <div className={styles.formActions}>
-                    <button type="submit" className={styles.submitButton} onClick={handleSubmit}>Einloggen</button>
+                    <button type="submit" className={styles.submitButton} onClick={handleSubmit}>Jetzt Registrieren</button>
+                 
                 </div>
-                <div className={styles.registerLink}>
-                    <span>Du hast kein Account? </span>
-                    <a href="/register" className={styles.registerButton} onClick={handleRegister}>Jetzt Registrieren</a>
-                </div>
+                
             </div>
         </div>
     );
 }
 
-export default Anmeldung;
+export default Register;
