@@ -1,0 +1,37 @@
+.verwaltungContainer {
+    margin-top: 56px; /* Die Höhe der Navbar abziehen */
+    height: calc(100vh - 56px); /* Setzt die Höhe der Verwaltung auf den verbleibenden Platz minus die Höhe der Navbar */
+    overflow-y: auto; /* Ermöglicht das Scrollen, falls der Inhalt höher ist als der sichtbare Bereich */
+}
+
+.tabs {
+    display: flex;
+    justify-content: flex-start; /* Items links anordnen */
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+    background-color: #383D3B; /* Hintergrundfarbe der Tabs */
+    color: #FFFFFF; /* Textfarbe der Tabs */
+    border-bottom: 2px solid #383D3B; /* Focus-Indikator */
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif; /* Schriftart */
+    transition: background-color 0.3s, color 0.3s; /* Animation für Hover */
+}
+
+.tab:hover {
+    background-color: #e7b84b;; /* Gelbe Hintergrundfarbe beim Hover */
+    color: #FFFFFF; /* Schwarze Textfarbe beim Hover */
+}
+
+.tab.active {
+    background-color: #e7b84b; /* Anpassen der Hintergrundfarbe des aktiven Tabs */
+    border-bottom: 2px solid #FFFFFF;
+    font-weight: bold;
+}

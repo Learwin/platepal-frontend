@@ -1,0 +1,18 @@
+.layoutContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Höhe des gesamten Bildschirms */
+  
+}
+
+.backgroundImage {
+    height: 200px; /* Höhe des Hintergrundbildes */
+    width: 100%; /* Bild über die gesamte Breite */
+    object-fit: cover; /* Bild vollständig abdecken */
+}
+
+.divbackground {
+    display: flex;
+}
+
+

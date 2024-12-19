@@ -1,0 +1,106 @@
+/* Container für das gesamte Profil */
+.profilContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    background-color: transparent; /* Optional: Hintergrundfarbe */
+}
+
+/* Tabs */
+.tabs {
+    background-color: #383D3B; /* Hintergrundfarbe für die Tabs */
+    border-radius: 4px; /* Optionale Abrundung */
+    padding: 8px; /* Abstand um die Tabs */
+    width: 100%;
+    max-width: 800px; /* Maximalgröße, um Overflow zu verhindern */
+    margin-bottom: 20px;
+    align-content: center;
+    display: flex;
+    justify-content: space-around; /* Breite ausdehnen und verteilen */
+}
+
+.tab {
+    color: white; /* Standardfarbe für Labels */
+    font-weight: bold;
+    text-align: left; /* Linksbündige Ausrichtung */
+    transition: background-color 0.3s ease; /* Weicher Übergang */
+}
+
+.tab:hover {
+    background-color: #e7b84b; /* Hover-Farbe */
+    color: black; /* Textfarbe beim Hover */
+}
+
+/* Aktiver Tab */
+.Mui-selected {
+    background-color: #e7b84b !important; /* Hintergrund für aktiven Tab */
+    color: black !important; /* Textfarbe für aktiven Tab */
+}
+
+/* Tab-Inhalt */
+.tabContent {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Profil-Inhalt */
+.profilContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+/* Bild-Sektion */
+.imageSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.profileImage {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+}
+
+.uploadButton {
+    background-color: #e7b84b;
+    color: black;
+    font-weight: bold;
+}
+
+/* Eingabefelder */
+.textField {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 15px;
+    background-color: #F1F1F1
+}
+
+.textField label {
+    font-weight: bold;
+}
+
+/* Speichern-Button */
+.saveButton {
+    background-color: #4caf50;
+    color: white;
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.saveButton:hover {
+    background-color: #45a049;
+}
