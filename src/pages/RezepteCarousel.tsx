@@ -1,68 +1,123 @@
-import React from 'react';
-import { Card, CardMedia, CardContent, Typography, Box } from '@mui/material';
-import Carousel from 'react-multi-carousel';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Card, CardMedia, CardContent, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { fetchRezeptByIdImage } from '../services/api';
 
-type Rezept = {
+// Interface für Rezept
+interface Recipe {
   id: number;
+  anweisungen: string;
+  zeit: number;
+  schwierigkeit: number;
+  defaultPortionen: number;
+  foto: string;
+  user_Id: {
+    id: number;
+    username: string;
+    passwort: string;
+    emailAdresse: string;
+  };
+  durchschnittlicheBewertung: number;
+  flag: number;
   name: string;
-  imageUrl: string;
-};
+  zutaten: Array<{
+    id: number;
+    name: string;
+    kcal: number;
+    fett: number;
+    gesaettigteFettsaeuren: number;
+    kohlenhydrate: number;
+    zucker: number;
+    ballaststoffe: number;
+    eiweiss: number;
+    salz: number;
+    foto: string;
+    allergene: Array<{
+      id: number;
+      name: string;
+      zutaten: string[];
+    }>;
+    rezepte: string[];
+  }>;
+}
 
-type RezepteCarouselProps = {
-  rezepte: Rezept[];
-};
-
-const RezepteCarousel: React.FC<RezepteCarouselProps> = ({ rezepte }) => {
+const RezeptCarousel: React.FC<{ rezepte: Recipe[]; zutatDerWocheId: number }> = ({ rezepte, zutatDerWocheId }) => {
   const navigate = useNavigate();
+  const [images, setImages] = useState<{ [key: number]: string }>({});
 
-  const responsive = {
-    superLargeDesktop: { breakpoint: { max: 4000, min: 1024 }, items: 3 },
-    desktop: { breakpoint: { max: 1024, min: 768 }, items: 2 },
-    tablet: { breakpoint: { max: 768, min: 464 }, items: 1 },
-    mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
+  const handleClick = (rezeptId: number) => {
+    navigate(`/rezept/${rezeptId}`);
   };
 
+  const loadImages = useCallback(async () => {
+    try {
+      const imagePromises = rezepte.map((rezept) =>
+        fetchRezeptByIdImage(rezept.id).then((data) => ({
+          id: rezept.id,
+          imageUrl: data.imageUrl,
+        }))
+      );
+  
+      const imageResults = await Promise.all(imagePromises);
+      const newImages = imageResults.reduce((acc, { id, imageUrl }) => {
+        acc[id] = imageUrl;
+        return acc;
+      }, {} as { [key: number]: string });
+  
+      setImages(newImages);
+    } catch (error) {
+      console.error('Fehler beim Laden der Bilder:', error);
+    }
+  }, [rezepte]); // useCallback stellt sicher, dass die Funktion nur dann neu erstellt wird, wenn sich rezepte ändern.
+  
+  useEffect(() => {
+    if (rezepte.length > 0) {
+      loadImages();
+    }
+  }, [rezepte, loadImages]);
+  
+
+  const filteredRezepte = rezepte.filter((rezept) =>
+    rezept.zutaten.some((zutat) => zutat.id === zutatDerWocheId)
+  );
+
   return (
-    <div>
-      <Typography variant="h6" gutterBottom>
-        Rezepte der Woche
-      </Typography>
-      {rezepte.length > 0 ? (
-        <Carousel responsive={responsive} infinite autoPlay>
-          {rezepte.map((rezept) => (
-            <Box
-              key={rezept.id}
+    <Carousel
+      autoPlay={true}
+      infiniteLoop={true}
+      showThumbs={false}
+      dynamicHeight={false}
+      interval={3000}
+    >
+      {filteredRezepte.map((rezept) => (
+        <div
+          key={rezept.id}
+          onClick={() => handleClick(rezept.id)}
+          style={{ cursor: 'pointer', padding: '20px' }}
+        >
+          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardMedia
+              component="img"
+              alt={`Rezept: ${rezept.name}`}
+              image={images[rezept.id] || rezept.foto}
               sx={{
-                padding: '10px',
-                cursor: 'pointer',
+                width: '100%',
+                height: '300px',
+                objectFit: 'cover',
               }}
-              onClick={() => navigate(`/rezept/${rezept.id}`)}
-            >
-              <Card>
-                <CardMedia
-                  component="img"
-                  alt={rezept.name}
-                  height="200"
-                  image={rezept.imageUrl || 'https://via.placeholder.com/200'}
-                  style={{ objectFit: 'cover' }}
-                />
-                <CardContent>
-                  <Typography variant="body1" textAlign="center">
-                    {rezept.name}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Box>
-          ))}
-        </Carousel>
-      ) : (
-        <Typography variant="body1" color="textSecondary" align="center">
-          Keine Rezepte verfügbar
-        </Typography>
-      )}
-    </div>
+            />
+            <CardContent sx={{ flexGrow: 0 }}>
+              <Typography variant="h5" component="div" align="center">
+                {rezept.name}
+              </Typography>
+            </CardContent>
+          </Card>
+        </div>
+      ))}
+    </Carousel>
   );
 };
 
-export default RezepteCarousel;
+export default RezeptCarousel;

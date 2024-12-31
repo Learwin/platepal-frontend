@@ -1,0 +1,163 @@
+/* Container für die Rezepturverwaltung */
+.rezepturContainer {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Rezeptliste */
+.rezeptList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;       
+}
+
+/* Rezept Item */
+.rezeptItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9 !important;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rezeptItem h4 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.rezeptItem p {
+    font-size: 14px;
+    color: #777 !important;
+}
+
+/* Button zum Hinzufügen */
+.addRecipeButton {
+    background-color: #4caf50 !important; /* Grüner Hintergrund */
+    color: white; /* Weiße Schrift */
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.addRecipeButton:hover {
+    background-color: #45a049 !important; /* Etwas dunkleres Grün beim Hover */
+}
+
+/* Bearbeiten-Button */
+.editRezeptButton {
+    border-color: #E7B84B !important;
+    color: #E7B84B !important;
+  }
+  
+  .editRezeptButton:hover {
+    background-color: #E7B84B !important;
+    color: white !important;
+  }
+  
+  /* Delete Button */
+  .deleteRezeptButton {
+    border-color: #FF7033 !important;
+    color: #FF7033 !important;
+  }
+  
+  .deleteRezeptButton:hover {
+    background-color: #FF7033 !important;
+    color: white !important;
+  }
+
+/* Formularbereich */
+.rezeptForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%; /* Anpassung an Container-Breite */
+    max-width: 800px; /* Maximalbreite festlegen */
+    margin-top: 20px;
+}
+
+/* Textfelder im Formular */
+.rezeptInput {
+    width: 100%;
+    background-color: #F1F1F1 !important;
+    padding: 10px;
+    border: 1px solid #ccc !important;
+    border-radius: 4px;
+}
+
+
+.rezeptInput label {
+    font-weight: bold;
+}
+
+.rezeptInput input {
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.rezeptInput input:focus {
+    outline: none;
+    border-color: #4caf50 !important;
+}
+
+/* Speichern-Button */
+.saveRezeptButton {
+    background-color: #4caf50 !important;
+    color: white !important;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveRezeptButton:hover {
+    background-color: #45a049 !important;
+}
+
+/* Fehlernachricht */
+.errorMessage {
+    color: red !important;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Datei Upload Container */
+.fileUploadContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 10px;
+}
+
+.fileUploadContainer label {
+    font-weight: bold;
+}
+
+.fileUploadContainer input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc !important;
+}
+
+.imagePreview {
+    margin-top: 10px;
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+}

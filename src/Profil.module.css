@@ -4,13 +4,15 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+    max-width: 800px; /* Feste Breite */
     padding: 20px;
     background-color: transparent; /* Optional: Hintergrundfarbe */
 }
 
+
 /* Tabs */
 .tabs {
-    background-color: #383D3B; /* Hintergrundfarbe für die Tabs */
+    background-color: #383D3B !important; /* Hintergrundfarbe für die Tabs */
     border-radius: 4px; /* Optionale Abrundung */
     padding: 8px; /* Abstand um die Tabs */
     width: 100%;
@@ -22,14 +24,14 @@
 }
 
 .tab {
-    color: white; /* Standardfarbe für Labels */
+    color: white !important; /* Standardfarbe für Labels */
     font-weight: bold;
     text-align: left; /* Linksbündige Ausrichtung */
     transition: background-color 0.3s ease; /* Weicher Übergang */
 }
 
 .tab:hover {
-    background-color: #e7b84b; /* Hover-Farbe */
+    background-color: #e7b84b !important; /* Hover-Farbe */
     color: black; /* Textfarbe beim Hover */
 }
 
@@ -69,11 +71,11 @@
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #ccc;
+    border: 2px solid #ccc !important;
 }
 
 .uploadButton {
-    background-color: #e7b84b;
+    background-color: #e7b84b !important;
     color: black;
     font-weight: bold;
 }
@@ -83,7 +85,7 @@
     width: 100%;
     max-width: 400px;
     margin-bottom: 15px;
-    background-color: #F1F1F1
+    background-color: #F1F1F1 !important;
 }
 
 .textField label {
@@ -92,7 +94,7 @@
 
 /* Speichern-Button */
 .saveButton {
-    background-color: #4caf50;
+    background-color: #4caf50 !important;
     color: white;
     width: 100%;
     max-width: 400px;
@@ -102,5 +104,5 @@
 }
 
 .saveButton:hover {
-    background-color: #45a049;
+    background-color: #45a049 !important;
 }

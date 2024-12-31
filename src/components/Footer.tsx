@@ -1,7 +1,7 @@
 import React from 'react';
-import styles from "../Startseite.module.css";
+import styles from "../Footer.module.css";
 
-function Footer(){
+const Footer: React.FC = () => {
     return (
     
         <div className={styles.footer}>
@@ -45,6 +45,6 @@ function Footer(){
       </div>
     
     );
-}
+};
 
 export default Footer;

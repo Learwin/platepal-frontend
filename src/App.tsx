@@ -6,6 +6,7 @@ import Anmeldung from './pages/Anmeldung';
 import Register from './pages/Register';
 import Profil from './pages/Profil';
 import { AuthProvider } from './context/AuthContextType';
+import RezeptDetails from './pages/RezeptDetails';
 
 function App() {
   return (
@@ -14,11 +15,11 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Startseite />} />
         <Route path="home" element={<Startseite />} />
-        <Route path="profil"  />
+        <Route path="/rezept/:rezeptId" element={<RezeptDetails />} />
+        <Route path="profil"   element={<Profil />} />
       </Route>
       <Route path="/login" element={<Anmeldung />} />
       <Route path="/register" element={<Register />} />
-      <Route path="profil" element={<Profil />} />
     </Routes>
     </AuthProvider>
   );

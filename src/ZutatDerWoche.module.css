@@ -1,0 +1,14 @@
+.container {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  button {
+    margin-top: 20px;
+  }
+  
+  .MuiFormControl-root {
+    margin-bottom: 20px;
+  }
+  

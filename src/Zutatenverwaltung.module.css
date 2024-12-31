@@ -1,0 +1,90 @@
+/* Zutaten Verwaltung Container */
+.zutatenContainer {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+
+}
+
+/* Formularbereich */
+.zutatenForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%; /* Volle Breite nutzen */
+  max-width: 900px; /* Maximale Breite des Formulars */
+  margin-top: 20px;
+}
+
+/* Textfelder im Formular */
+.zutatenInput {
+  width: 100%; /* Textfelder auf die volle Breite setzen */
+  max-width: 600px; /* Optional: maximale Breite auf 600px setzen */
+  background-color: #F1F1F1 !important;
+  padding: 10px;
+  border: 1px solid #ccc !important;
+  border-radius: 4px;
+}
+
+.zutatenInput label {
+  font-weight: bold;
+}
+
+.zutatenInput input {
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.zutatenInput input:focus {
+  outline: none;
+  border-color: #4caf50 !important;
+}
+
+/* Datei Upload Container */
+.fileUploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 600px; /* Maximale Breite auf 600px setzen */
+  margin-top: 10px;
+}
+
+
+.addIngridientButton {
+  background-color: #4caf50 !important; /* Grüner Hintergrund */
+  color: white; /* Weiße Schrift */
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.addIngridientButton:hover {
+    background-color: #45a049 !important; /* Etwas dunkleres Grün beim Hover */
+}
+
+.editZutatButton {
+  border-color: #E7B84B !important;
+  color: #E7B84B;
+}
+
+.editZutatButton:hover {
+  background-color: #E7B84B !important;
+  color: white;
+}
+
+/* Delete Button */
+.deleteZutatButton {
+  border-color: #FF7033 !important;
+  color: #FF7033 !important;
+}
+
+.deleteZutatButton:hover {
+  background-color: #FF7033 !important;
+  color: white !important;
+}

@@ -1,18 +1,145 @@
+/* Hauptcontainer für das gesamte Layout */
+body, html {
+  overflow-x: hidden; /* Verhindert horizontales Scrollen */
+  width: 100%;
+  height: 100%; /* Stellt sicher, dass der Körper die gesamte Höhe des Viewports einnimmt */
+  margin: 0;
+  padding: 0;
+}
+
+/* Hauptcontainer für das Layout */
 .layoutContainer {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* Höhe des gesamten Bildschirms */
-  
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-bottom: 10px;
+  position: relative;
+  width: 100%; /* Verhindert horizontales Ausdehnen */
+  overflow-x: hidden; /* Verhindert horizontalen Überlauf */
+  overflow-y: auto; /* Ermöglicht vertikales Scrollen */
 }
 
+/* Hintergrundbild */
 .backgroundImage {
-    height: 200px; /* Höhe des Hintergrundbildes */
-    width: 100%; /* Bild über die gesamte Breite */
-    object-fit: cover; /* Bild vollständig abdecken */
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
 }
 
-.divbackground {
+/* Wrapper für den Inhalt */
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  margin-top: 20px;
+  position: relative;
+  max-width: 100%; /* Verhindert horizontales Ausdehnen */
+  overflow: hidden; /* Verhindert das Ausbrechen von Inhalt */
+}
+
+/* Für größere Bildschirme (ab 1200px) */
+@media (min-width: 1200px) {
+  .layoutContainer {
+      padding: 0 20px; /* Fügt für größere Bildschirme horizontalen Abstand hinzu */
+  }
+
+  .contentWrapper {
+      max-width: 1200px; /* Begrenzung der Breite für größere Bildschirme */
+      width: 100%;
+      padding: 40px; /* Mehr Platz für den Inhalt */
+  }
+
+  .backgroundImage {
+      /* Anpassung des Hintergrundbilds für große Bildschirme */
+      height: 100%;
+      width: 100%;
+  }
+}
+
+/* Optional: Weitere Optimierungen für Bildschirme über 1600px */
+@media (min-width: 1600px) {
+  .layoutContainer {
+      padding: 0 40px; /* Erhöht den Abstand für noch größere Bildschirme */
+  }
+
+  .contentWrapper {
+      max-width: 1400px; /* Erweiterung des Inhaltsbereichs */
+  }
+}
+
+  
+  /* Container für die Suche und Kategorien */
+  .searchContainer {
+    width: 100%;
     display: flex;
-}
-
-
+    flex-direction: column; /* Ordnet die Suchleiste oben und die Kategorien darunter */
+    align-items: center;
+    gap: 20px; /* Abstand zwischen Suchleiste und Kategorien */
+    margin-top: 20px;
+  }
+  
+  /* Styling für die Suchleiste */
+  .searchBar {
+    width: 80%;
+    max-width: 600px; /* Maximale Breite der Suchleiste */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Abstand zwischen den Elementen in der Suchleiste */
+  }
+  
+  /* Eingabefeld für die Suche */
+  .searchInput {
+    flex-grow: 1;
+    font-size: 16px;
+    background-color: white;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc; /* Optional: Rand für die Eingabe */
+  }
+  
+  /* Container für die Kategorien */
+  .categoriesContainer {
+    display: flex !important; /* Ordnet die Kategorien nebeneinander an */
+    flex-wrap: nowrap; /* Verhindert Umbruch */
+    justify-content: center; /* Zentriert die Kategorien horizontal */
+    align-items: center; /* Zentriert die Kategorien vertikal */
+    gap: 15px; /* Abstand zwischen den Kategorien */
+    margin-bottom: 20px;
+  }
+  
+  /* Kategorien-Icons */
+  .categoryIcon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #E7B84B;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Animation bei Hover */
+  }
+  
+  /* Hover-Effekt für Kategorien */
+  .categoryIcon:hover {
+    transform: scale(1.1); /* Vergrößert die Kategorie leicht */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Schatteneffekt */
+  }
+  
+  /* Tooltips für Kategorien */
+  .tooltip {
+    font-size: 14px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-align: center;
+  }
+  

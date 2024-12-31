@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Tab, Tabs, Box, TextField, Button } from '@mui/material';
 import styles from '../Profil.module.css';
+import Rezepturverwaltung from './Rezepturverwaltung';
+import Zutatenverwaltung from './Zutatenverwaltung';
+import ZutatDerWoche from './ZutatDerWoche';
 
 const Profil: React.FC = () => {
     const [activeTab, setActiveTab] = useState<number>(0);
@@ -44,6 +47,8 @@ const Profil: React.FC = () => {
                     <Tab label="Zutatenverwaltung" className={styles.tab} />
                     <Tab label="Zutat der Woche" className={styles.tab} />
                 </Tabs>
+  );
+
 
                 {/* Tab Inhalte */}
                 <Box className={styles.tabContent}>
@@ -102,9 +107,9 @@ const Profil: React.FC = () => {
                             </Button>
                         </div>
                     )}
-                    {activeTab === 1 && <div>Rezepturverwaltung-Inhalte</div>}
-                    {activeTab === 2 && <div>Zutatenverwaltung-Inhalte</div>}
-                    {activeTab === 3 && <div>Zutat der Woche-Inhalte</div>}
+                    {activeTab === 1 && <div><Rezepturverwaltung /></div>}
+                    {activeTab === 2 && <div><Zutatenverwaltung /></div>}
+                    {activeTab === 3 && <div><ZutatDerWoche /></div>}
                 </Box>
             </Box>
         </div>
