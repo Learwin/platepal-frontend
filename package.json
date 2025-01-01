@@ -18,6 +18,7 @@
     "mui-styles": "^2.0.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
     "react-multi-carousel": "^2.8.5",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^7.0.2",

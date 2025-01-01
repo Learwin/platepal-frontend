@@ -47,7 +47,7 @@ const Profil: React.FC = () => {
                     <Tab label="Zutatenverwaltung" className={styles.tab} />
                     <Tab label="Zutat der Woche" className={styles.tab} />
                 </Tabs>
-  
+ 
 
 
                 {/* Tab Inhalte */}

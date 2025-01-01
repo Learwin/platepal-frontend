@@ -340,3 +340,45 @@ export const postZutat = async (zutat: Zutat): Promise<Zutat> => {
   }
 };
 
+// services/api.ts
+
+// PUT-Methode zum Aktualisieren einer Zutat
+export const putZutat = async (zutat: Zutat): Promise<Zutat> => {
+  try {
+    const response = await fetch(`${API_URL}/zutat`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(zutat),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Fehler beim Aktualisieren der Zutat: ${response.statusText}`);
+    }
+
+    return await response.json(); // Gibt die aktualisierte Zutat zurück
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren der Zutat:', error);
+    throw error;
+  }
+};
+
+// DELETE-Methode zum Löschen einer Zutat
+export const deleteZutat = async (zutatId: number): Promise<void> => {
+  try {
+    const response = await fetch(`${API_URL}/zutat/${zutatId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Fehler beim Löschen der Zutat: ${response.statusText}`);
+    }
+    // Keine Rückgabe erforderlich, wenn die Zutat erfolgreich gelöscht wurde
+  } catch (error) {
+    console.error('Fehler beim Löschen der Zutat:', error);
+    throw error;
+  }
+};
+
+
