@@ -40,7 +40,7 @@ interface ZutatDerWoche {
   interface Allergen {
     id: number;
     name: string;
-    zutaten: string[];
+    zutaten?: string[];
   }
   
 
