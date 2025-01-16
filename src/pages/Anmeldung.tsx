@@ -1,46 +1,47 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContextType';
 import styles from '../Anmeldung.module.css';
-import Logo from '../assets/images/Logo.png'; // Anpassen für den richtigen Pfad
+import Logo from '../assets/images/Logo.png'; 
+import { getUserByEmail } from '../services/api';
 
-const Anmeldung = () => {
+const Anmeldung: React.FC = () => {
     const [mail, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [error, setError] = useState('');
+    const { setIsLoggedIn, setUser } = useAuth(); // Zugriff auf den AuthContext
     const navigate = useNavigate();
-
-    const handleNavigateToAddRecipe = () => {
-        navigate("/add-recipe"); // Navigiert zur "Rezept hinzufügen" Seite
-    };
-
-    const handleNavigateToHome = () => {
-        navigate("/home"); // Navigiert zur Startseite
-    };
-
-    const handleRegister = () => {
-        navigate("/register"); // Navigiert zur Registrierungsseite
-    };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8080/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ mail, password }),
-            });
+            const user = await getUserByEmail(mail); // Benutzer aus der API abrufen
 
-            if (response.ok) {
-                console.log("Anmeldung erfolgreich");
-                setIsLoggedIn(true); // Benutzer als eingeloggt markieren
+            if (user) {
+                if (user.passwort === password) { // Passwort überprüfen
+                    const validUser = {
+                        emailAdresse: user.emailAdresse,
+                        username: user.username || 'Unbekannter Benutzer',
+                        passwort: user.passwort,
+                        id: user.id,
+                        foto: user.foto || 'default.jpg',
+                    };
+
+                    console.log("Anmeldung erfolgreich");
+                    setUser(validUser); // Benutzer im AuthContext setzen
+                    setIsLoggedIn(true); // Anmelden im AuthContext
+                    setError(''); // Fehler zurücksetzen
+                    navigate("/home"); // Nach erfolgreichem Login zur Startseite navigieren
+                } else {
+                    setError('Das Passwort ist falsch.');
+                }
             } else {
-                console.error('Login fehlgeschlagen');
+                setError('Benutzer nicht gefunden.');
             }
         } catch (error) {
             console.error('Ein Fehler ist aufgetreten:', error);
+            setError('Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
         }
     };
 
@@ -50,61 +51,55 @@ const Anmeldung = () => {
                 className={styles.logo} 
                 src={Logo} 
                 alt="Logo" 
-                onClick={handleNavigateToHome} 
             />
             <div className={styles.formContainer}>
-                {!isLoggedIn ? (
-                    <>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="email" className={styles.label}>E-Mail-Adresse</label>
-                            <input 
-                                id="email" 
-                                type="email" 
-                                className={styles.inputField}
-                                value={mail}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="password" className={styles.label}>Passwort</label>
-                            <input 
-                                id="password" 
-                                type="password" 
-                                className={styles.inputField}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <a href="/forgot-password" className={styles.forgotPassword}>Passwort vergessen?</a>
-                        </div>
+                <form onSubmit={handleSubmit}>
+                    {!error ? (
+                        <>
+                            <p className={styles.errorMessage}>{error}</p>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="email" className={styles.label}>E-Mail-Adresse</label>
+                                <input 
+                                    id="email" 
+                                    type="email" 
+                                    className={styles.inputField}
+                                    value={mail}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="password" className={styles.label}>Passwort</label>
+                                <input 
+                                    id="password" 
+                                    type="password" 
+                                    className={styles.inputField}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                <a href="/forgot-password" className={styles.forgotPassword}>Passwort vergessen?</a>
+                            </div>
+                            <div className={styles.formActions}>
+                                <button 
+                                    type="submit" 
+                                    className={styles.submitButton}
+                                >
+                                    Einloggen
+                                </button>
+                            </div>
+                        </>
+                    ) : (
                         <div className={styles.formActions}>
                             <button 
-                                type="submit" 
                                 className={styles.submitButton} 
-                                onClick={handleSubmit}
+                                onClick={() => navigate("/home")} // Button, der zur Startseite führt
                             >
-                                Einloggen
+                                Zur Startseite
                             </button>
                         </div>
-                        <div className={styles.registerLink}>
-                            <span>Du hast kein Account? </span>
-                            <button 
-                                className={styles.registerButton} 
-                                onClick={handleRegister}
-                            >
-                                Jetzt Registrieren
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <div className={styles.formActions}>
-                        <button 
-                            className={styles.submitButton} 
-                            onClick={handleNavigateToAddRecipe}
-                        >
-                            Rezept hinzufügen
-                        </button>
-                    </div>
-                )}
+                    )}
+                </form>
             </div>
         </div>
     );

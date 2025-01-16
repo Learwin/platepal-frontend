@@ -7,20 +7,26 @@ import Register from './pages/Register';
 import Profil from './pages/Profil';
 import { AuthProvider } from './context/AuthContextType';
 import RezeptDetails from './pages/RezeptDetails';
+import { CartProvider } from './context/CartContext';
+import { CheckedProvider } from './context/CheckedContext';
 
 function App() {
   return (
     <AuthProvider>
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Startseite />} />
-        <Route path="home" element={<Startseite />} />
-        <Route path="/rezept/:rezeptId" element={<RezeptDetails />} />
-        <Route path="profil"   element={<Profil />} />
-      </Route>
-      <Route path="/login" element={<Anmeldung />} />
-      <Route path="/register" element={<Register />} />
-    </Routes>
+      <CartProvider>
+        <CheckedProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Startseite />} />
+              <Route path="home" element={<Startseite />} />
+              <Route path="/rezept/:rezeptId" element={<RezeptDetails />} />
+              <Route path="profil" element={<Profil />} />
+            </Route>
+            <Route path="/login" element={<Anmeldung />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </CheckedProvider>
+      </CartProvider>
     </AuthProvider>
   );
 }

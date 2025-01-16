@@ -1,0 +1,32 @@
+/* Cart.module.css */
+.cartPreview {
+  width: 300px;
+  height: calc(100vh - 60px); /* Höhe des Viewports minus der Höhe der Navbar */
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin-top: 20px; /* Abstand nach oben */
+  z-index: 100; /* Sicherstellen, dass der Warenkorb hinter der Navbar bleibt */
+  gap: 20px;
+}
+
+.cartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #383D3B;
+  color: white;
+}
+
+.cartContent {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.closeButton {
+  color: white;
+}

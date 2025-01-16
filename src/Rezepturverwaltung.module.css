@@ -53,28 +53,6 @@
     background-color: #45a049 !important; /* Etwas dunkleres Grün beim Hover */
 }
 
-/* Bearbeiten-Button */
-.editRezeptButton {
-    border-color: #E7B84B !important;
-    color: #E7B84B !important;
-  }
-  
-  .editRezeptButton:hover {
-    background-color: #E7B84B !important;
-    color: white !important;
-  }
-  
-  /* Delete Button */
-  .deleteRezeptButton {
-    border-color: #FF7033 !important;
-    color: #FF7033 !important;
-  }
-  
-  .deleteRezeptButton:hover {
-    background-color: #FF7033 !important;
-    color: white !important;
-  }
-
 /* Formularbereich */
 .rezeptForm {
     display: flex;
@@ -161,3 +139,48 @@
     object-fit: cover;
     border-radius: 4px;
 }
+
+.editRezeptButton {
+    border-color: #E7B84B !important;
+    color: #E7B84B;
+  }
+  
+  .editRezeptButton:hover {
+    background-color: #E7B84B !important;
+    color: white;
+  }
+  
+  /* Delete Button */
+  .deleteRezeptButton {
+    border-color: #FF7033 !important;
+    color: #FF7033 !important;
+  }
+  
+  .deleteRezeptButton:hover {
+    background-color: #FF7033 !important;
+    color: white !important;
+  }
+
+  .actionBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Zentriert die Inhalte horizontal */
+    gap: 15px; /* Abstand zwischen den Elementen */
+    padding: 20px;
+    background-color: #f9f9f9 !important; /* Optional: Hintergrundfarbe */
+    border: 1px solid #ddd; /* Optional: Umrandung */
+    border-radius: 8px; /* Optional: Abgerundete Ecken */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Schatten */
+    margin-top: 20px; /* Optional: Abstand nach oben */
+  }
+  
+  .uploadButton {
+    background-color: #E7B84B !important; /* Blaues Design */
+    color: white;
+  }
+  
+  .saveButton {
+    background-color: #4caf50 !important; /* Grünes Design */
+    color: white;
+  }
+  

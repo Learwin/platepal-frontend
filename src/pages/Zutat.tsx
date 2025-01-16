@@ -1,66 +1,54 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardMedia, CardContent, Typography } from '@mui/material';
-import { fetchZutatDerWoche, fetchZutatByIdImage } from '../services/api';
+import { fetchZutatByIdImage } from '../services/api';
 
 interface ZutatProps {
-  id?: number;
+  id: number;
   name: string;
   imgUrl: string;
 }
 
-const Zutat: React.FC = () => {
-  const [zutatDerWoche, setZutatDerWoche] = useState<ZutatProps | null>(null);
+const Zutat: React.FC<{ zutat: ZutatProps }> = ({ zutat }) => {
   const [imageUrl, setImageUrl] = useState<string>('');
 
-  // Zutat der Woche und Bild laden
-  useEffect(() => {
-    const fetchZutat = async () => {
-      try {
-        const data = await fetchZutatDerWoche(); // API-Aufruf für die Zutat der Woche
-        setZutatDerWoche({
-          id: data.id,
-          name: data.zutat.name,
-          imgUrl: data.zutat.foto,
-        });
-
-        // Lade das Bild der Zutat der Woche
-        if (data.id) {
-          const imageData = await fetchZutatByIdImage(data.id); // Hole das Bild mit der Zutat-ID
-          setImageUrl(imageData.imageUrl); // Setze das Bild-URL
+    useEffect(() => {
+      const fetchImage = async () => {
+        try {
+          const response = await fetchZutatByIdImage(zutat.id);
+          console.log('API Response:', response);
+          setImageUrl(response.imageUrl); // Stelle sicher, dass foto gesetzt wird
+        } catch (error) {
+          console.error('Fehler beim Laden des Bildes:', error);
         }
-      } catch (error) {
-        console.error('Fehler beim Abrufen der Zutat der Woche:', error);
-      }
-    };
-
-    fetchZutat();
-  }, []);
+      };
+    
+      fetchImage();
+    }, [zutat.id]);
+    
 
   return (
-    <div style={{ padding: '20px' }}>
-      {zutatDerWoche ? (
-        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <CardMedia
-            component="img"
-            alt={`Zutat der Woche: ${zutatDerWoche.name}`}
-            image={imageUrl || zutatDerWoche.imgUrl} // Nutze das Bild, das durch die API geliefert wurde
-            style={{
-              objectFit: 'cover',
-              width: '100%',
-              height: '300px', // Höhe des Bildes angepasst
-            }}
-          />
-          <CardContent>
-            <Typography variant="h5" component="div" align="center">
-              {zutatDerWoche.name}
-            </Typography>
-          </CardContent>
-        </Card>
-      ) : (
-        <Typography variant="h6" align="center">
-          Keine Zutat der Woche ausgewählt.
-        </Typography>
-      )}
+    <div style={{ padding: '20px', width: '100%', maxWidth: '350px', margin: '0 auto' }}>
+      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+        {imageUrl && (
+         <CardMedia
+         component="img"
+         alt={`Zutat der Woche: ${zutat.name}`}
+         image={imageUrl || 'fallback-image.jpg'}  // fallback-image.jpg als Platzhalter
+         style={{
+           objectFit: 'cover',
+           width: '100%',
+           height: '200px', // Setze eine Höhe für das Bild
+           borderTopLeftRadius: '8px',
+           borderTopRightRadius: '8px',
+         }}
+       />
+        )}
+        <CardContent>
+          <Typography variant="h5" component="div" align="center">
+            {zutat.name}
+          </Typography>
+        </CardContent>
+      </Card>
     </div>
   );
 };

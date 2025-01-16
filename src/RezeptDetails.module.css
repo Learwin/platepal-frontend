@@ -1,44 +1,59 @@
-.container {
-    padding: 50px;
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.cardImage {
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.zutatenListe {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardButton {
+  margin-top: 16px;
+  width: 100%;
+  background-color: #06B153;
+}
+
+.cardContent {
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.MuiCard-root {
+  width: 100%;
+  box-sizing: border-box; /* Verhindert, dass Padding die Gesamtbreite überschreitet */
+}
+
+.MuiCard-root > .MuiCardContent-root {
+  overflow: visible; /* Stellt sicher, dass der Inhalt nicht abgeschnitten wird */
+}
+
+.cardWrapper {
+  margin-top: 16px; /* MarginTop 4 (im MUI-SX-System ist 1 = 8px, also 4 = 32px) */
+  padding: 32px; /* Padding 4 */
+  border-radius: 4px; /* BorderRadius 4 */
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1); /* BoxShadow 3 */
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+
+@media (max-width: 600px) {
+  .MuiCard-root {
+    width: 100%; /* Stellt sicher, dass die Card auf kleinen Geräten den vollen Platz einnimmt */
   }
-  
-  .cardContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .cardImage {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
-  }
-  
-  .cardButton {
-    margin-top: 16px;
-    width: 100%;
-  }
-  
-  .cardContent {
-    padding: 16px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-  }
-  
-  .gridContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
-  }
-  
-  .gridItem {
-    width: 100%;
-  }
-  
-  @media (max-width: 768px) {
-    .cardImage {
-      height: 180px;
-    }
-  }
-  
+}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, Typography } from '@mui/material';
 import styles from '../Startseite.module.css'; // CSS-Modul
-import { fetchRezepte, fetchZutatDerWoche } from '../services/api'; // API-Funktionen
+import {  fetchRezepte, fetchZutatDerWoche } from '../services/api'; // API-Funktionen
 import RezeptCarousel from './RezepteCarousel';
 import Zutat from './Zutat'; // Zutat-Komponente importieren
 
@@ -21,6 +21,7 @@ interface Recipe {
     username: string;
     passwort: string;
     emailAdresse: string;
+    foto?: string;
   };
   zutaten: {
     id: number;
@@ -47,58 +48,39 @@ interface Recipe {
 interface ZutatProps {
   id: number;
   name: string;
-  kcal?: number;
-  fett?: number;
-  gesaettigteFettsaeuren?: number;
-  kohlenhydrate?: number;
-  zucker?: number;
-  ballaststoffe?: number;
-  eiweiss?: number;
-  salz?: number;
   imgUrl: string;
-  allergene?: Allergen[];
-}
-
-interface Allergen {
-  id: number;
-  name: string;
 }
 
 const Startseite: React.FC = () => {
   const [zutatDerWoche, setZutatDerWoche] = useState<ZutatProps | null>(null);
   const [rezepte, setRezepte] = useState<Recipe[]>([]);
 
-  // Zutat der Woche laden
-  useEffect(() => {
-    const fetchZutat = async () => {
-      try {
-        const data = await fetchZutatDerWoche(); // API-Aufruf für die Zutat der Woche
-        setZutatDerWoche({
-          id: data.zutat.id,  // Stelle sicher, dass 'id' übergeben wird
-          name: data.zutat.name,
-          imgUrl: data.zutat.foto,
-        });
-      } catch (error) {
-        console.error('Fehler beim Abrufen der Zutat der Woche:', error);
-      }
-    };
-  
-    fetchZutat();
-  }, []);
-
-  // Rezepte laden
+  // Zutat der Woche und Rezepte laden
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Lade Zutat der Woche
+        const zutatData = await fetchZutatDerWoche();
+        setZutatDerWoche({
+          id: zutatData.zutat.id,
+          name: zutatData.zutat.name,
+          imgUrl: zutatData.zutat.foto,
+        });
+
+        // Lade Rezepte
         const fetchedRezepte = await fetchRezepte();
         setRezepte(fetchedRezepte);
       } catch (error) {
-        console.error('Fehler beim Abrufen der Rezepte:', error);
+        console.error('Fehler beim Abrufen der Zutat der Woche und Rezepte:', error);
       }
     };
 
     fetchData();
   }, []);
+
+  if (!zutatDerWoche) {
+    return <Typography variant="h6" align="center">Lade Zutat der Woche...</Typography>; // Ladeanzeige bis Zutat verfügbar
+  }
 
   return (
     <Box sx={{ p: 3 }}>
@@ -110,13 +92,7 @@ const Startseite: React.FC = () => {
       <Grid container spacing={3} alignItems="stretch">
         {/* Zutat der Woche */}
         <Grid item xs={12} sm={6}>
-          {zutatDerWoche ? (
-            <Zutat />
-          ) : (
-            <Typography variant="body1" color="text.secondary">
-              Keine Zutat der Woche ausgewählt.
-            </Typography>
-          )}
+          <Zutat zutat={zutatDerWoche} />
         </Grid>
 
         {/* Rezept Carousel */}

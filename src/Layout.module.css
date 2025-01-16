@@ -16,7 +16,7 @@ body, html {
   position: relative;
   width: 100%; /* Verhindert horizontales Ausdehnen */
   overflow-x: hidden; /* Verhindert horizontalen Überlauf */
-  overflow-y: auto; /* Ermöglicht vertikales Scrollen */
+ overflow-y: auto; /* Ermöglicht vertikales Scrollen */
 }
 
 /* Hintergrundbild */
@@ -29,18 +29,6 @@ body, html {
   height: 100%;
   object-fit: cover;
   z-index: -1;
-}
-
-/* Wrapper für den Inhalt */
-.contentWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  margin-top: 20px;
-  position: relative;
-  max-width: 100%; /* Verhindert horizontales Ausdehnen */
-  overflow: hidden; /* Verhindert das Ausbrechen von Inhalt */
 }
 
 /* Für größere Bildschirme (ab 1200px) */
@@ -75,63 +63,111 @@ body, html {
 
   
   /* Container für die Suche und Kategorien */
-  .searchContainer {
+ /* Container für die Suche und Kategorien */
+.searchContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* Ordnet die Suchleiste oben und die Kategorien darunter */
+  align-items: center;
+  gap: 500px; /* Abstand zwischen Suchleiste und Kategorien */
+  margin-top: 20px;
+  border: 1px solid red; 
+}
+
+/* Styling für die Suchleiste */
+.searchBar {
+  width: 80%;
+  max-width: 600px; /* Maximale Breite der Suchleiste */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px; /* Abstand zwischen den Elementen in der Suchleiste */
+  border: 1px solid red; 
+}
+
+/* Eingabefeld für die Suche */
+.searchInput {
+  flex-grow: 1;
+  font-size: 16px;
+  background-color: white;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc; /* Optional: Rand für die Eingabe */
+}
+
+/* Container für die Kategorien */
+.categoriesContainer {
+  display: flex; /* Ordnet die Kategorien nebeneinander an */
+  flex-wrap: nowrap; /* Verhindert Umbruch */
+  justify-content: center; /* Zentriert die Kategorien horizontal */
+  align-items: center; /* Zentriert die Kategorien vertikal */
+  gap: 15px; /* Abstand zwischen den Kategorien */
+  margin-bottom: 20px;
+
+  /* Responsiv für kleinere Bildschirme */
+  overflow-x: auto; /* Zeigt eine horizontale Scrollleiste an, wenn nötig */
+  width: 100%; /* Stellt sicher, dass der Container die ganze Breite einnimmt */
+  padding: 0 10px; /* Optional: Innenabstand bei kleineren Bildschirmen */
+}
+
+/* Kategorien-Icons */
+.categoryIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #E7B84B;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Animation bei Hover */
+}
+
+/* Hover-Effekt für Kategorien */
+.categoryIcon:hover {
+  transform: scale(1.1); /* Vergrößert die Kategorie leicht */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Schatteneffekt */
+}
+
+/* Optional: Styles für größere Bildschirme */
+@media (max-width: 600px) {
+  .categoriesContainer {
+    padding: 0 10px; /* Optional: Innenabstand bei kleineren Bildschirmen */
+  }
+}
+
+/* Layout für mobile Geräte */
+/* Layout für mobile Geräte */
+@media (max-width: 600px) {
+  .layoutContainer {
     width: 100%;
-    display: flex;
-    flex-direction: column; /* Ordnet die Suchleiste oben und die Kategorien darunter */
-    align-items: center;
-    gap: 20px; /* Abstand zwischen Suchleiste und Kategorien */
-    margin-top: 20px;
+    padding: 0; /* Kein zusätzliches Padding */
   }
-  
-  /* Styling für die Suchleiste */
-  .searchBar {
-    width: 80%;
-    max-width: 600px; /* Maximale Breite der Suchleiste */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px; /* Abstand zwischen den Elementen in der Suchleiste */
+
+  /* ContentWrapper soll jetzt 100% der Bildschirmauflösung einnehmen */
+  .contentWrapper {
+    width: 100vw; /* Setzt die Breite auf 100% der Bildschirmauflösung */
+    max-width: 100vw; /* Verhindert, dass eine Breitenbegrenzung angewendet wird */
+    padding: 20px; /* Optional: Innenabstand */
+    margin: 0; /* Kein zusätzlicher Abstand */
+    box-sizing: border-box; /* Sorgt dafür, dass Padding die Breite nicht beeinflusst */
   }
-  
-  /* Eingabefeld für die Suche */
-  .searchInput {
-    flex-grow: 1;
-    font-size: 16px;
-    background-color: white;
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ccc; /* Optional: Rand für die Eingabe */
-  }
-  
+
   /* Container für die Kategorien */
   .categoriesContainer {
-    display: flex !important; /* Ordnet die Kategorien nebeneinander an */
-    flex-wrap: nowrap; /* Verhindert Umbruch */
-    justify-content: center; /* Zentriert die Kategorien horizontal */
-    align-items: center; /* Zentriert die Kategorien vertikal */
-    gap: 15px; /* Abstand zwischen den Kategorien */
-    margin-bottom: 20px;
-  }
-  
-  /* Kategorien-Icons */
-  .categoryIcon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #E7B84B;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Animation bei Hover */
+    flex-wrap: nowrap; /* Verhindert Umbruch und sorgt dafür, dass die Buttons in einer Zeile bleiben */
+    justify-content: flex-start; /* Sorgt dafür, dass die Buttons am Anfang beginnen */
+    gap: 15px; /* Abstand zwischen den Kategorien */
+    padding: 0 10px; /* Optional: Innenabstand bei kleinen Bildschirmen */
+    width: 100%; /* Stellt sicher, dass der Container die gesamte Breite einnimmt */
+    overflow-x: auto; /* Zeigt eine horizontale Scrollleiste an, wenn nötig */
+    box-sizing: border-box; /* Verhindert, dass Padding die Gesamtbreite überschreitet */
   }
-  
-  /* Hover-Effekt für Kategorien */
-  .categoryIcon:hover {
-    transform: scale(1.1); /* Vergrößert die Kategorie leicht */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Schatteneffekt */
-  }
+}
+
+
+
   
   /* Tooltips für Kategorien */
   .tooltip {
@@ -142,4 +178,98 @@ body, html {
     border-radius: 4px;
     text-align: center;
   }
-  
+
+
+/* Layout.module.css */
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  margin: 20px auto;
+  position: relative;
+  max-width: 80%;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+
+/* Cart-Container im Content-Bereich */
+/* Container für den Einkaufswagen */
+/* Layout.module.css */
+
+/* Container für das Overlay */
+.cartOverlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px; /* Breite des Overlays */
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  transform: translateX(100%); /* Anfangszustand: Overlay ist versteckt */
+  transition: transform 0.3s ease-in-out;
+  z-index: 1300; /* Über Navbar und andere Inhalte legen */
+}
+
+/* Wenn das Overlay geöffnet ist */
+.cartOverlay.open {
+  transform: translateX(0); /* Overlay anzeigen */
+}
+
+/* Inhalt des Einkaufswagen-Overlays */
+.cartContent {
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Header des Overlays */
+.cartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Schließ-Button für das Overlay */
+.closeButton {
+  padding: 0;
+}
+
+/* Zusätzliche Stile für das Schließen des Overlay-Buttons */
+.cartHeader button {
+  padding: 0;
+}
+
+.cartButtons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem; /* optional, um Abstand zu den Rändern hinzuzufügen */
+  background-color: #fff; /* optional, falls du den Hintergrund ändern möchtest */
+  align-items: center; /* Vertikale Ausrichtung der Buttons */
+}
+
+.cartButtons .absendenButton {
+  background-color: #4caf50;
+  &:hover {
+    background-color: #45a049;
+  }
+  margin-right: 16px; /* Abstand zwischen den Buttons */
+  white-space: nowrap; /* Verhindert den Zeilenumbruch */
+}
+
+.cartButtons .loeschenButton {
+  background-color: #FF7033;
+  &:hover {
+    background-color: #e55c29;
+  }
+}
+

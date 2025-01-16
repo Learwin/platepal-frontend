@@ -19,6 +19,8 @@ const Zutatenverwaltung = () => {
     eiweiss: 0,
     salz: 0,
     allergene: [],
+    menge: 0,
+    einheit: [],
   });
   const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>(''); 
@@ -47,8 +49,11 @@ const Zutatenverwaltung = () => {
       setOpenSnackbar(true);
       return;
     }
-
+  
     try {
+      // Logge die Zutat, die an das Backend gesendet wird
+      console.log('Zutat, die an das Backend gesendet wird:', newIngredient);
+  
       if (newIngredient.id === 0) {
         const savedIngredient = await postZutat(newIngredient);
         setIngredients([...ingredients, savedIngredient]);
@@ -58,7 +63,7 @@ const Zutatenverwaltung = () => {
         );
         setIngredients(updatedIngredients);
       }
-
+  
       setNewIngredient({
         id: 0,
         name: '',
@@ -72,6 +77,8 @@ const Zutatenverwaltung = () => {
         eiweiss: 0,
         salz: 0,
         allergene: [],
+        menge: 0,
+        einheit: [],
       });
       setIsFormVisible(false);
       setAlertMessage('Zutat erfolgreich gespeichert!');

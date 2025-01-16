@@ -1,135 +1,118 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import LogoBild from '../assets/images/Logo.png'; // Das Bild korrekt importieren
-import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
-
-import AdbIcon from '@mui/icons-material/Adb';
-import styles from "../Startseite.module.css"; // Import the CSS module
-import { MenuIcon } from 'lucide-react';
+import LogoBild from '../assets/images/Logo.png';
+import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography, Badge } from '@mui/material';
+import { ShoppingCart } from 'lucide-react';
+import { useCheckedContext } from '../context/CheckedContext';
+import { useAuth } from '../context/AuthContextType'; // AuthContext importieren
+import styles from "../Startseite.module.css";
+import Cart from '../pages/Cart';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn, user, setUser } = useAuth(); // Zustand aus dem AuthContext verwenden
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { checkedCount } = useCheckedContext();
 
-  console.log(styles);
+  // State für das Menu (ob es geöffnet oder geschlossen ist)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleClick = (): void => {
-    navigate("/login"); // Navigiert zur Anmeldeseite
-    console.log("test");
+  const handleLogout = (): void => {
+    setIsLoggedIn(false); // isLoggedIn im AuthContext zurücksetzen
+    setUser(null); // Benutzerdaten im AuthContext zurücksetzen
+    navigate("/home");
+    setAnchorEl(null); // Menu nach dem Logout schließen
   };
 
-  const pages = ['Magazin', 'Blog', 'Über Uns'];
-  const settings = ['Login', 'Logout'];
+  const handleClick = (): void => {
+    navigate("/login");
+    setAnchorEl(null); // Menu nach dem Login schließen
+  };
 
-  function ResponsiveAppBar() {
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-      setAnchorElNav(event.currentTarget);
-    };
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-      setAnchorElUser(event.currentTarget);
-    };
-  
-    const handleCloseNavMenu = () => {
-      setAnchorElNav(null);
-    };
-  
-    const handleCloseUserMenu = () => {
-      setAnchorElUser(null);
-    };
+  const handleProfileClick = (): void => {
+    navigate("/profil");
+    setAnchorEl(null); // Menu nach dem Profilaufruf schließen
+  };
 
-    return (
-      <AppBar position="static" className={styles.appBar}>
+  const handleCartClick = (): void => {
+    setIsCartOpen(!isCartOpen);
+  };
+
+  const handleLogoClick = () => {
+    navigate("/home", { state: { isLoggedIn } });
+  };
+
+  const settings = isLoggedIn ? ['Profil', 'Logout'] : ['Login'];
+
+  // Funktion zum Öffnen des Menüs beim Klick auf das Avatar
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  // Funktion zum Schließen des Menüs
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <>
+      <AppBar position="absolute" className={styles.appBar}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* Hier das Logo-Bild einfügen */}
-            <img src={LogoBild} alt="Logo" className={styles.logo} />
+          <img 
+  src={LogoBild} 
+  alt="Logo" 
+  className={styles.logo} 
+  onClick={handleLogoClick} 
+  style={{ cursor: 'pointer' }} 
+/>
 
-            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={{ display: { xs: 'block', md: 'none' } }}
-              >
-                {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
+            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
+              <Button className={styles.navButton} onClick={() => navigate('/magazin')}>Magazin</Button>
+              <Button className={styles.navButton} onClick={() => navigate('/blog')}>Blog</Button>
+              <Button className={styles.navButton} onClick={() => navigate('/ueber-uns')}>Über Uns</Button>
             </Box>
 
-            <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
-              className={styles.mobileTitle}
-            >
-            </Typography>
+            <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
+              {isLoggedIn && (
+                <IconButton onClick={handleCartClick} sx={{ color: 'inherit', marginRight: 2 }}>
+                  <Badge badgeContent={checkedCount} color="error">
+                    <ShoppingCart />
+                  </Badge>
+                </IconButton>
+              )}
 
-            {/* Box für Seiten links, mit rechtsbündiger Anordnung */}
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'flex-end' }}>
-              {pages.map((page) => (
-                <Button
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                  className={styles.navButton}
-                >
-                  {page}
-                </Button>
-              ))}
-            </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <IconButton sx={{ p: 0 }} onClick={handleMenuClick}>
+                  <Avatar alt="User Avatar" src={user?.foto || "/static/images/avatar/2.jpg"} />
                 </IconButton>
               </Tooltip>
+
+              {/* Das Menü wird jetzt basierend auf anchorEl geöffnet */}
               <Menu
                 sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
                 anchorOrigin={{
                   vertical: 'top',
                   horizontal: 'right',
                 }}
-                keepMounted
                 transformOrigin={{
                   vertical: 'top',
                   horizontal: 'right',
                 }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
                   <MenuItem
                     key={setting}
-                    onClick={setting === 'Login' ? handleClick : handleCloseUserMenu} // handleClick für Login-Option
+                    onClick={
+                      setting === 'Login'
+                        ? handleClick
+                        : setting === 'Logout'
+                        ? handleLogout
+                        : handleProfileClick
+                    }
                   >
                     <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                   </MenuItem>
@@ -139,11 +122,14 @@ const Navbar: React.FC = () => {
           </Toolbar>
         </Container>
       </AppBar>
-    );
-  }
 
-  return <ResponsiveAppBar />;
-  
+      <Cart isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} />
+    </>
+  );
 };
 
 export default Navbar;
+
+
+
+//NAvbar kontrollieren

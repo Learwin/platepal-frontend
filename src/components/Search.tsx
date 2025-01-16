@@ -16,7 +16,7 @@ const Search: React.FC = () => {
     { name: 'Diabetikerfreundlich', icon: <Heart /> },
     { name: 'High Protein', icon: <BicepsFlexed /> },
     { name: 'Dessert', icon: <Dessert /> },
-];
+  ];
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -26,13 +26,15 @@ const Search: React.FC = () => {
     <div className={styles.searchContainer}>
       {/* Suchfeld */}
       <div className={styles.searchBar}>
-        <TextField
-          label="Search for categories..."
-          variant="outlined"
-          value={query}
-          onChange={handleSearchChange}
-          className="searchInput"
-        />
+      <TextField
+  label="Search for categories..."
+  variant="outlined"
+  value={query}
+  onChange={handleSearchChange}
+  className="searchInput"
+  style={{ width: '100%', maxWidth: '400px', margin: '10px 0' }}
+/>
+
       </div>
 
       {/* Kategorien */}
