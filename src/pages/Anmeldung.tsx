@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContextType';
 import styles from '../Anmeldung.module.css';
 import Logo from '../assets/images/Logo.png'; 
 import { getUserByEmail } from '../services/api';
+import { Typography } from '@mui/material';
 
 const Anmeldung: React.FC = () => {
     const [mail, setEmail] = useState('');
@@ -26,6 +27,8 @@ const Anmeldung: React.FC = () => {
                         passwort: user.passwort,
                         id: user.id,
                         foto: user.foto || 'default.jpg',
+                        // Setze das flag auf 1, wenn der Benutzer ID 14 hat
+                        flag: user.id === 14 ? 1 : 0,
                     };
 
                     console.log("Anmeldung erfolgreich");
@@ -79,15 +82,20 @@ const Anmeldung: React.FC = () => {
                                     required
                                 />
                                 <a href="/forgot-password" className={styles.forgotPassword}>Passwort vergessen?</a>
+                                
                             </div>
                             <div className={styles.formActions}>
-                                <button 
-                                    type="submit" 
-                                    className={styles.submitButton}
-                                >
-                                    Einloggen
-                                </button>
-                            </div>
+    <button 
+        type="submit" 
+        className={styles.submitButton}
+    >
+        Einloggen
+    </button>
+</div>
+<div className={styles.formActions}>
+    <Typography>Noch kein Nutzer? Dann</Typography>
+    <Link to="/register" className={styles.registerLink}>Jetzt registrieren</Link>
+</div>
                         </>
                     ) : (
                         <div className={styles.formActions}>

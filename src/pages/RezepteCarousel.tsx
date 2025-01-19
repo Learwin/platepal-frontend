@@ -20,7 +20,6 @@ interface Recipe {
     emailAdresse: string;
   };
   durchschnittlicheBewertung: number;
-  flag: number;
   name: string;
   zutaten: Array<{
     id: number;
@@ -54,10 +53,13 @@ const RezeptCarousel: React.FC<{ rezepte: Recipe[]; zutatDerWocheId: number }> =
   const loadImages = useCallback(async () => {
     try {
       const imagePromises = rezepte.map((rezept) =>
-        fetchRezeptByIdImage(rezept.id).then((data) => ({
-          id: rezept.id,
-          imageUrl: data.imageUrl,
-        }))
+        fetchRezeptByIdImage(rezept.id).then((data) => {
+          console.log('Geladene URL:', data.imageUrl); // Überprüfe die Bild-URL
+          return {
+            id: rezept.id,
+            imageUrl: data.imageUrl,
+          };
+        })
       );
   
       const imageResults = await Promise.all(imagePromises);
@@ -121,3 +123,6 @@ const RezeptCarousel: React.FC<{ rezepte: Recipe[]; zutatDerWocheId: number }> =
 };
 
 export default RezeptCarousel;
+
+
+//Carousel funktioniert auch nicht.

@@ -1,30 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, TextField, Box, List, ListItem, ListItemText, Divider, Snackbar, Alert } from '@mui/material';
-import { postZutat, deleteZutat, Zutat } from '../services/api';
+import { postZutat, deleteZutat, Zutat, fetchZutatById } from '../services/api';
 import styles from '../Zutatenverwaltung.module.css';
 import { CirclePlus } from 'lucide-react';
+import { useAuth } from '../context/AuthContextType';
+
+const getDefaultIngredient = (): Zutat => ({
+  id: 0,
+  name: '',
+  foto: './images/ingredient/zucker.png',
+  kcal: 0,
+  fett: 0,
+  gesaettigteFettsaeuren: 0,
+  kohlenhydrate: 0,
+  zucker: 0,
+  ballaststoffe: 0,
+  eiweiss: 0,
+  salz: 0,
+  allergene: [],
+  menge: 0,
+  einheit: [],
+});
 
 const Zutatenverwaltung = () => {
   const [ingredients, setIngredients] = useState<Zutat[]>([]);
-  const [newIngredient, setNewIngredient] = useState<Zutat>({
-    id: 0,
-    name: '',
-    foto: './images/ingredient/zucker.png',
-    kcal: 0,
-    fett: 0,
-    gesaettigteFettsaeuren: 0,
-    kohlenhydrate: 0,
-    zucker: 0,
-    ballaststoffe: 0,
-    eiweiss: 0,
-    salz: 0,
-    allergene: [],
-    menge: 0,
-    einheit: [],
-  });
+  
+const [newIngredient, setNewIngredient] = useState<Zutat>(getDefaultIngredient());
   const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>(''); 
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false); 
+  const [zutaten, setZutaten] = useState([]);
+
+
+  const { user } = useAuth();
+  
+  
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -51,9 +61,6 @@ const Zutatenverwaltung = () => {
     }
   
     try {
-      // Logge die Zutat, die an das Backend gesendet wird
-      console.log('Zutat, die an das Backend gesendet wird:', newIngredient);
-  
       if (newIngredient.id === 0) {
         const savedIngredient = await postZutat(newIngredient);
         setIngredients([...ingredients, savedIngredient]);
@@ -63,23 +70,7 @@ const Zutatenverwaltung = () => {
         );
         setIngredients(updatedIngredients);
       }
-  
-      setNewIngredient({
-        id: 0,
-        name: '',
-        foto: '',
-        kcal: 0,
-        fett: 0,
-        gesaettigteFettsaeuren: 0,
-        kohlenhydrate: 0,
-        zucker: 0,
-        ballaststoffe: 0,
-        eiweiss: 0,
-        salz: 0,
-        allergene: [],
-        menge: 0,
-        einheit: [],
-      });
+      setNewIngredient(getDefaultIngredient());
       setIsFormVisible(false);
       setAlertMessage('Zutat erfolgreich gespeichert!');
       setOpenSnackbar(true);
@@ -89,6 +80,7 @@ const Zutatenverwaltung = () => {
       setOpenSnackbar(true);
     }
   };
+  
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {

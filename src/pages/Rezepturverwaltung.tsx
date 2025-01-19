@@ -1,15 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, Box, List, ListItem, ListItemText, Divider, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Chip, Stack, Avatar } from '@mui/material';
+import { Button, TextField, Box, List, ListItem, ListItemText, Divider, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Chip, Stack, Avatar, Typography } from '@mui/material';
 import { deleteRezepte, fetchRezepte, postRezept, updateRezept, Recipe, fetchEinheiten, fetchZutatenListe, Zutat, uploadImage, fetchRezeptByIdImage } from '../services/api';
 import { useAuth } from '../context/AuthContextType'; // AuthContext importieren
 import styles from '../Rezepturverwaltung.module.css';
 import { CirclePlus } from 'lucide-react';
 import UploadImageRezept from './UploadImageRezept';
+import { PostRezeptModel } from '../models/PostRezeptModel';
+import { PostZutatenModel } from '../models/PostZutatenModel';
+import { ClassNames } from '@emotion/react';
+import TimerControl from './TimerControl';
+import { PostTimerModel } from '../models/PostTimerModel';
+
+
 
 const Rezeptverwaltung = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [newRecipe, setNewRecipe] = useState<Recipe>({
-    id: 0,
+  const [newRecipe, setNewRecipe] = useState<PostRezeptModel>({
+    name: '',
+    anweisungen: '',
+    zeit: 0,
+    schwierigkeit: 0,
+    defaultPortionen: 0,
+    flag: 0,
+    user_Id: 0,
+    timer: [],
+    durchschnittlicheBewertung: 0,
+    zutaten: [
+
+    ],});
+
+const [currentRezept, serCurrentRezept] = useState<Recipe>({
+  id: 0,
     name: '',
     anweisungen: '',
     zeit: 0,
@@ -25,8 +46,10 @@ const Rezeptverwaltung = () => {
     },
     durchschnittlicheBewertung: 0,
     flag: 0,
+    timer: [],
     zutaten: [],
   });
+
   const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>('');
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -35,10 +58,16 @@ const Rezeptverwaltung = () => {
   const [zutaten, setZutaten] = useState<Zutat[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
+  const [addedChips, setAddedChips] = useState<{ id: number, name: string }[]>([]);
+  const [completeZutaten, setCompleteZutaten] = useState<PostZutatenModel[]>([]); // Neuer State für vollständige Zutaten
 
+  
 
   // Verwende den AuthContext, um den eingeloggten Benutzer abzurufen
+
   const { user } = useAuth();
+ 
+  
 
   useEffect(() => {
     
@@ -93,152 +122,191 @@ const Rezeptverwaltung = () => {
     loadEinheiten();
     loadZutaten();
   
-    if (newRecipe.id !== 0) {
+    if (currentRezept.id !== 0) {
       console.log("Zutaten des bearbeiteten Rezepts:", newRecipe.zutaten);
     }
-  }, [user, newRecipe.id]);  // recipes als Abhängigkeit hinzufügen, um sicherzustellen, dass die Bilder geladen werden, wenn Rezepte gesetzt werden
+  }, [user, currentRezept.id]);  // recipes als Abhängigkeit hinzufügen, um sicherzustellen, dass die Bilder geladen werden, wenn Rezepte gesetzt werden
   
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Recipe) => {
-    setNewRecipe({ ...newRecipe, [field]: event.target.value });
-  };
-
-  console.log("New Recipe zutaten:", newRecipe.zutaten); // Debugging
-
-const handleSaveRecipe = async () => {
-  if (!user) {
-    setAlertMessage('Benutzer ist nicht angemeldet!');
-    setOpenSnackbar(true);
-    return;
-  }
-
-  if (!newRecipe.name || !newRecipe.anweisungen) {
-    setAlertMessage('Bitte alle Pflichtfelder ausfüllen');
-    setOpenSnackbar(true);
-    return;
-  }
-
-  try {
-    // Stelle sicher, dass das Rezeptfoto gesetzt wird, bevor das Rezept gespeichert wird
-    const recipeToSave = {
-      ...newRecipe,
-      user_Id: user,
-      ...(newRecipe.id === 0 && { foto: newRecipe.foto || '' }), // Nur für neue Rezepte das Foto übergeben
+  
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof PostRezeptModel) => {
+      // Hier wird newRecipe direkt aktualisiert
+      setNewRecipe({
+        ...newRecipe,
+        [field]: event.target.value, // Aktualisiere das Feld basierend auf der Eingabe
+      });
     };
-
-    let savedRecipe;
-    if (newRecipe.id === 0) {
-      // Rezept speichern (neues Rezept)
-      savedRecipe = await postRezept(recipeToSave);
-      setRecipes([...recipes, savedRecipe]);
-    } else {
-      // Rezept aktualisieren (Foto wird nicht übergeben)
-      const updatedRecipe = await updateRezept(recipeToSave);
-      const updatedRecipes = recipes.map((recipe) =>
-        recipe.id === updatedRecipe.id ? updatedRecipe : recipe
-      );
-      setRecipes(updatedRecipes);
-    }
-
-    // Preserve zutaten when resetting newRecipe after save
-    setNewRecipe({
-      id: 0,
-      name: '',
-      anweisungen: '',
-      zeit: 0,
-      schwierigkeit: 0,
-      defaultPortionen: 0,
-      foto: '',  // Rücksetzen des Bildes, falls nicht mehr vorhanden
-      user_Id: {
-        id: 0,
-        username: '',
-        passwort: '',
-        emailAdresse: '',
-        foto: '',
-      },
-      durchschnittlicheBewertung: 0,
-      flag: 0,
-      zutaten: newRecipe.zutaten, // Ensure zutaten are carried over correctly
-    });
-
-    setIsFormVisible(false);
-    setAlertMessage('Rezept erfolgreich gespeichert!');
-    setOpenSnackbar(true);
-  } catch (error) {
-    console.error('Fehler beim Speichern des Rezepts:', error);
-    setAlertMessage('Fehler beim Speichern des Rezepts. Bitte versuche es erneut.');
-    setOpenSnackbar(true);
-  }
-};
-
-
-  
-
-  const handleZutatSelectChange = (
-    index: number,
-    event: SelectChangeEvent<string>,  // Verwende SelectChangeEvent statt ChangeEvent
-    field: string
-  ) => {
-    const newZutaten = [...newRecipe.zutaten];
-    const value = event.target.value;
     
-    if (field === 'zutat') {
-      newZutaten[index].name = value;
-    } else if (field === 'einheit') {
-      const selectedEinheit = einheiten.find(einheit => einheit.name === value);
-      newZutaten[index].einheit = selectedEinheit || { id: 0, name: '', abkuerzung: '' };
-    }
+    const handleZutatSelectChange = (
+      index: number,
+      e: SelectChangeEvent<number>,
+      field: string
+    ) => {
+      const value = e.target.value;
+      const updatedZutaten = [...newRecipe.zutaten];
+      updatedZutaten[index] = {
+        ...updatedZutaten[index],
+        [field]: value,  // Aktualisiere das Feld entsprechend
+      };
+      setNewRecipe({ ...newRecipe, zutaten: updatedZutaten });
+    };
     
-    setNewRecipe({ ...newRecipe, zutaten: newZutaten });
-  };
-  
+    const handleZutatTextChange = (
+      index: number,
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+      field: string
+    ) => {
+      const value = parseFloat(e.target.value); // Falls nötig, Wert als Zahl parsen
+      const updatedZutaten = [...newRecipe.zutaten];
+      updatedZutaten[index] = {
+        ...updatedZutaten[index],
+        [field]: value,
+      };
+      setNewRecipe({ ...newRecipe, zutaten: updatedZutaten });
+    };
+    
+    const handleEinheitSelectChange = (index: number, e: SelectChangeEvent<number | string>, field: string) => { // Wichtig: Typ für e anpassen
+      const value = Number(e.target.value); // Explizite Typumwandlung
+      const updatedZutaten = [...newRecipe.zutaten];
+    
+      updatedZutaten[index] = {
+        ...updatedZutaten[index],
+        einheit: { id: value },
+      };
+    
+      setNewRecipe({ ...newRecipe, zutaten: updatedZutaten });
+    };
   
   
 
-  const handleZutatTextChange = (
-    index: number,
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: string
-  ) => {
+  const handleZutatUpdate = (index: number) => {
     const updatedZutaten = [...newRecipe.zutaten];
     updatedZutaten[index] = {
-      ...updatedZutaten[index],
-      [field]: e.target.value
+      ...updatedZutaten[index], // Hier bleiben alle aktuellen Werte, da keine Änderungen an den Textfeldern vorgenommen werden
     };
+  
     setNewRecipe({ ...newRecipe, zutaten: updatedZutaten });
+  
+    // Textfelder zurücksetzen
+    const resetZutaten = [...newRecipe.zutaten];
+    resetZutaten[index] = {
+      id: 0,  // ID zurücksetzen, falls notwendig
+      menge: 0,  // Menge zurücksetzen
+      einheit: { id: 0} // Einheit zurücksetzen
+    };
+  
+    setNewRecipe({ ...newRecipe, zutaten: resetZutaten });
+  
+    // Chip aktualisieren, anstatt zu löschen
+    setAddedChips((prevChips) =>
+      prevChips.map((chip) =>
+        chip.id === newRecipe.zutaten[index].id
+          ? {
+              ...chip,
+              name: `Zutat: ${zutaten.find((z) => z.id === newRecipe.zutaten[index].id)?.name}`,
+            }
+          : chip
+      )
+    );
+  };
+  
+  
+  const handleZutatAsChip = (index: number) => {
+    const zutat = newRecipe.zutaten[index];
+
+    if (zutat.menge > 0 && zutat.einheit && zutat.einheit.id > 0) {
+      const foundZutat = zutaten.find(z => z.id === zutat.id);
+      const zutatName = foundZutat ? foundZutat.name : 'Unbekannte Zutat';
+      const newChip = {
+          id: zutat.einheit.id,
+          name: `Zutat: ${zutatName}`,
+      };
+      setAddedChips((prevChips) => {
+          if (prevChips.some(chip => chip.id === newChip.id)) {
+              return prevChips;
+          } else {
+              return [...prevChips, newChip];
+          }
+      });
+        setCompleteZutaten(prevZutaten => {
+            const zutatExistiertBereits = prevZutaten.some(prevZutat => prevZutat.id === zutat.id && prevZutat.menge === zutat.menge && prevZutat.einheit.id === zutat.einheit.id)
+            if (zutatExistiertBereits) {
+                return prevZutaten
+            } else {
+                return [...prevZutaten, zutat]
+            }
+        })
+    }
+};
+  
+  
+
+  
+  const handleChipClick = (chipId: number) => {
+  const selectedChip = addedChips.find((chip) => chip.id === chipId);
+
+  if (selectedChip) {
+    const selectedZutat = zutaten.find((zutat) => zutat.id === selectedChip.id);
+
+    if (selectedZutat) {
+      const updatedZutaten = [...newRecipe.zutaten];
+      const index = updatedZutaten.findIndex((zutat) => zutat.id === 0); // Finde den ersten leeren Platz
+
+      if (index !== -1) {
+        updatedZutaten[index] = {
+          id: selectedZutat.id,
+          menge: 0, // Menge auf 0 setzen, da sie vom Benutzer eingegeben werden soll
+          einheit: { id: selectedChip.id }, // Korrektur: Nur die ID der Einheit übernehmen
+        };
+        setNewRecipe({ ...newRecipe, zutaten: updatedZutaten });
+      }
+    }
+  }
+};
+  
+  
+  
+  
+  
+  const handleDeleteChip = (chipId: number) => {
+    setAddedChips((prevChips) => prevChips.filter((chip) => chip.id !== chipId));
+  };
+  
+  
+  const handleZutatAdd = () => {
+    setNewRecipe((prevRecipe) => ({
+      ...prevRecipe,
+      zutaten: [...prevRecipe.zutaten, { id: 0, menge: 0, einheit: { id: 0 } }],
+    }));
   };
 
-   
+  const handleSaveRecipe = async () => {
+    if (!user) return;
 
-  const handleAddZutat = () => {
-    setNewRecipe({
-      ...newRecipe,
-      zutaten: [
-        ...newRecipe.zutaten,
-        {
-          id: 0,  // Platzhalter für die ID
-          name: '',  // Leerer Name
-          kcal: 0,  // Platzhalter für Kalorien
-          fett: 0,  // Platzhalter für Fett
-          gesaettigteFettsaeuren: 0,  // Platzhalter für gesättigte Fettsäuren
-          kohlenhydrate: 0,  // Platzhalter für Kohlenhydrate
-          zucker: 0,  // Platzhalter für Zucker
-          ballaststoffe: 0,  // Platzhalter für Ballaststoffe
-          eiweiss: 0,  // Platzhalter für Eiweiß
-          salz: 0,  // Platzhalter für Salz
-          foto: '',  // Platzhalter für das Foto
-          menge: 0,  // Platzhalter für die Menge
-          einheit: {
-            id: 0,  // Platzhalter für die Einheit-ID
-            name: '',  // Platzhalter für den Einheiten-Namen
-            abkuerzung: ''  // Platzhalter für die Abkürzung der Einheit
-          },
-          allergene: [],  // Leeres Array für Allergene
-          rezepte: []  // Leeres Array für Rezepte
-        }
-      ]
-    });
+    const newRecipeData: PostRezeptModel = {
+      user_Id: user.id,
+      name: newRecipe.name,
+      anweisungen: newRecipe.anweisungen,
+      zeit: newRecipe.zeit,
+      schwierigkeit: newRecipe.schwierigkeit,
+      defaultPortionen: newRecipe.defaultPortionen,
+      durchschnittlicheBewertung: 0,
+      timer: newRecipe.timer,
+      zutaten: completeZutaten, // Verwende das separate Array für die vollständigen Zutaten
+    };
+
+    try {
+      console.log('Daten vor dem Speichern:', JSON.stringify(newRecipeData, null, 2));
+      const savedRecipe = await postRezept(newRecipeData);
+      console.log('Rezept erfolgreich gespeichert:', savedRecipe);
+    } catch (error) {
+      console.error('Fehler beim Speichern des Rezepts:', error);
+    }
   };
+
+  // ... JSX (bleibt im Wesentlichen gleich)
+
+  
+  
 
   const handleRemoveZutat = (index: number) => {
     const updatedZutaten = [...newRecipe.zutaten];
@@ -279,11 +347,11 @@ const handleEdit = (id: number) => {
   if (Array.isArray(recipes)) {
     const recipeToEdit = recipes.find((recipe) => recipe.id === id);
     if (recipeToEdit) {
-      setNewRecipe({
-        ...recipeToEdit,  // Spread the existing recipe data
-        zutaten: recipeToEdit.zutaten || [],  // Ensure zutaten is always an array, even if empty
+   /*   setNewRecipe({
+       // ...recipeToEdit,  // Spread the existing recipe data
+       // zutaten: recipeToEdit.zutaten || [],  // Ensure zutaten is always an array, even if empty
         //foto: recipeToEdit.foto || ''  // Foto auch setzen
-      });
+      });*/
       setIsFormVisible(true);
     } else {
       console.error('Rezept nicht gefunden:', id);
@@ -294,12 +362,6 @@ const handleEdit = (id: number) => {
 };
 
 
-const handleDeleteZutat = (index: number) => {
-  const updatedZutaten = [...newRecipe.zutaten];
-  updatedZutaten.splice(index, 1);
-  setNewRecipe({ ...newRecipe, zutaten: updatedZutaten });
-};
-
 const handleOpenDialog = (recipeId: number) => {
   setSelectedRecipeId(recipeId);
   setIsDialogOpen(true);
@@ -308,6 +370,13 @@ const handleOpenDialog = (recipeId: number) => {
 const handleCloseDialog = () => {
   setIsDialogOpen(false);
   setSelectedRecipeId(null);
+};
+const handleTimerChange = (newTimers: PostTimerModel[]) => {
+  // Den Timer im Rezeptmodell speichern
+  setNewRecipe((prevRezept) => ({
+    ...prevRezept,
+    timer: newTimers,
+  }));
 };
 
 const fetchAndSetRecipeImage = async (id: number) => {
@@ -341,6 +410,8 @@ const handleUploadImage = async (file: File) => {
     console.error('Fehler beim Bild-Upload:', error);
   }
 };
+
+
 
 
 return (
@@ -404,126 +475,151 @@ return (
           style={{ marginBottom: 15 }}
         />
 
-        <Box>
-          <h3>Zutaten</h3>
-          {Array.isArray(newRecipe.zutaten) &&
-            newRecipe.zutaten.map((zutat, index) => (
-              <Box key={index} mb={2}>
-                <FormControl fullWidth style={{ marginBottom: 5 }}>
-                  <InputLabel>Zutat</InputLabel>
-                  <Select
-                    value={zutat.name || ''}
-                    onChange={(e) => handleZutatSelectChange(index, e, 'zutat')}
-                  >
-                    {zutaten.map((zutatOption) => (
-                      <MenuItem key={zutatOption.id} value={zutatOption.name}>
-                        {zutatOption.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <TextField
-                  label="Menge"
-                  variant="outlined"
-                  type="number"
-                  value={zutat.menge}
-                  onChange={(e) => handleZutatTextChange(index, e, 'menge')}
-                  fullWidth
-                  style={{ marginBottom: 5 }}
-                />
-                <FormControl fullWidth style={{ marginBottom: 5 }}>
-                  <InputLabel>Einheit</InputLabel>
-                  <Select
-                    value={zutat.einheit?.name || ''}
-                    onChange={(e) => handleZutatSelectChange(index, e, 'einheit')}
-                  >
-                    <MenuItem value="">
-                      <em>Keine Einheit</em>
-                    </MenuItem>
-                    {einheiten.map((einheit) => (
-                      <MenuItem key={einheit.id} value={einheit.name}>
-                        {einheit.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                {zutat.name && (
-                  <Chip
-                    label={zutat.name}
-                    onDelete={() => handleRemoveZutat(index)}
-                    color="primary"
-                    style={{ marginTop: 10 }}
-                  />
-                )}
-              </Box>
-            ))}
-          <Button variant="outlined" onClick={handleAddZutat}>
-            Zutat Hinzufügen
-          </Button>
-        </Box>
-
         
+        <div className={styles.rezeptContainer}>
+      <h3>Zutaten</h3>
+      {Array.isArray(newRecipe.zutaten) &&
+        newRecipe.zutaten.map((zutat, index) => (
+          <div key={index}>
+            <div className={styles.rezeptList}>
+              <FormControl fullWidth className={styles.rezeptForm}>
+                <InputLabel>Zutat</InputLabel>
+                <Select
+                  value={zutat.id}
+                  onChange={(e) => handleZutatSelectChange(index, e, 'id')}
+                  disabled={addedChips.some((chip) => chip.id === zutat.id)}
+                >
+                  {zutaten.map((zutatOption) => (
+                    <MenuItem key={zutatOption.id} value={zutatOption.id}>
+                      {zutatOption.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-        {/* Button zum Speichern des Rezepts */}
-        <Button
-          variant="contained"
-          onClick={handleSaveRecipe}
-          style={{ marginTop: 20 }}
-        >
-          Rezept Speichern
-        </Button>
+              <TextField
+                label="Menge"
+                variant="outlined"
+                type="number"
+                value={zutat.menge}
+                onChange={(e) => handleZutatTextChange(index, e, 'menge')}
+                fullWidth
+                className={styles.rezeptInput}
+              />
+
+              <FormControl fullWidth className={styles.rezeptForm}>
+                <InputLabel>Einheit</InputLabel>
+                <Select
+                   value={zutat.einheit ? zutat.einheit.id : ''} // Korrektur: Direkter Zugriff auf zutat.einheit.id
+                    onChange={(e) => handleEinheitSelectChange(index, e, 'einheit')}
+>
+                  {einheiten.map((einheitOption) => (
+                    <MenuItem key={einheitOption.id} value={einheitOption.id}>
+                      {einheitOption.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() =>
+                addedChips.some((chip) => chip.id === newRecipe.zutaten[index].id)
+  ? handleZutatUpdate(index)
+  : handleZutatAsChip(index)
+
+              }
+              className={styles.addZutatButton}
+            >
+              {addedChips.some((chip) => chip.id === newRecipe.zutaten[index].id)
+                ? 'Zutat aktualisieren'
+                : 'Zutat bestätigen'}
+            </Button>
+          </div>
+        ))}
+
+      <Box mt={2}>
+        <div className={styles.chipContainer}>
+          {addedChips.map((chip) => (
+            <Chip
+              key={`${chip.id}-${chip.name}`}
+              label={chip.name}
+              onClick={() => handleChipClick(chip.id)}
+              onDelete={() => handleDeleteChip(chip.id)}
+              className={styles.chip}
+            />
+          ))}
+        </div>
       </Box>
-    )}
 
-    {!isFormVisible && (
+      <Button variant="outlined" onClick={handleZutatAdd} className={styles.addZutatButton}>
+        Zutat Hinzufügen
+      </Button>
 
-     
-<List>
-{recipes.map((recipe) => (
-  <div key={recipe.id}>
-    <ListItem>
-      {/* Bild neben dem Rezeptnamen */}
-      {recipe.foto && (
-        <Avatar
-          alt={recipe.name}
-          src={recipe.foto}
-          style={{ width: 40, height: 40, marginRight: 10 }}
-        />
-      )}
+      <TimerControl onTimerChange={handleTimerChange} />
 
-      <ListItemText
-        primary={recipe.name}
-        secondary={`Dauer: ${recipe.zeit} Minuten`}
-      />
+      <Button
+        variant="contained"
+        style={{ marginTop: 20 }}
+        onClick={handleSaveRecipe}
+        className={styles.addZutatButton}
+      >
+        Rezept Speichern
+      </Button>
       
-      {/* Bearbeiten und Löschen Buttons */}
-      <Button
-        className={styles.editRezeptButton}
-        onClick={() => handleEdit(recipe.id)}
-      >
-        Bearbeiten
-      </Button>
-      <Button
-        className={styles.deleteRezeptButton}
-        onClick={() => handleDelete(recipe.id)}
-      >
-        Löschen
-      </Button>
-
-      {/* Bild hochladen Button */}
-      <Button onClick={() => handleOpenDialog(recipe.id)}>
-        Bild Hochladen
-      </Button>
-    </ListItem>
-    <Divider />
-  </div>
-))}
-</List>
-     
+      </div>
+        </Box>
+       
     )}
 
+    {/* Wenn das Formular nicht sichtbar ist, zeige die Liste der Rezepte */}
+    {!isFormVisible && (
+      <List>
+        {recipes.map((recipe) => (
+          <div key={recipe.id}>
+            <ListItem>
+              {/* Bild neben dem Rezeptnamen */}
+              {recipe.foto && (
+                <Avatar
+                  alt={recipe.name}
+                  src={recipe.foto}
+                  style={{ width: 40, height: 40, marginRight: 10 }}
+                />
+              )}
+
+              <ListItemText
+                primary={recipe.name}
+                secondary={`Dauer: ${recipe.zeit} Minuten`}
+              />
+
+              {/* Bearbeiten und Löschen Buttons */}
+              <Button
+                className={styles.editRezeptButton}
+                onClick={() => handleEdit(recipe.id)}
+              >
+                Bearbeiten
+              </Button>
+              <Button
+                className={styles.deleteRezeptButton}
+                onClick={() => handleDelete(recipe.id)}
+              >
+                Löschen
+              </Button>
+
+              {/* Bild hochladen Button */}
+              <Button onClick={() => handleOpenDialog(recipe.id)}>
+                Bild Hochladen
+              </Button>
+            </ListItem>
+            <Divider />
+          </div>
+        ))}
+      </List>
+    )}
+
+    {/* Upload Image Dialog */}
     {selectedRecipeId && (
       <UploadImageRezept
         open={isDialogOpen}
@@ -546,5 +642,4 @@ return (
   </div>
 );
 }
-
 export default Rezeptverwaltung;

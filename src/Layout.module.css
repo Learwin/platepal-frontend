@@ -69,9 +69,9 @@ body, html {
   display: flex;
   flex-direction: column; /* Ordnet die Suchleiste oben und die Kategorien darunter */
   align-items: center;
-  gap: 500px; /* Abstand zwischen Suchleiste und Kategorien */
-  margin-top: 20px;
-  border: 1px solid red; 
+  gap: 50px; /* Abstand zwischen Suchleiste und Kategorien */
+  margin-top: 100px;
+  z-index: 1001px;
 }
 
 /* Styling für die Suchleiste */
@@ -82,9 +82,7 @@ body, html {
   justify-content: center;
   align-items: center;
   gap: 50px; /* Abstand zwischen den Elementen in der Suchleiste */
-  border: 1px solid red; 
 }
-
 /* Eingabefeld für die Suche */
 .searchInput {
   flex-grow: 1;

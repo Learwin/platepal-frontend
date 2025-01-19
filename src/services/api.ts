@@ -1,4 +1,7 @@
-const API_URL = 'http://localhost:8080';
+import { PostRezeptModel } from "../models/PostRezeptModel";
+
+
+const API_URL = 'http://localhost:8080'
 
 interface ZutatDerWoche {
   id: number;
@@ -60,6 +63,9 @@ interface ZutatDerWoche {
     }
   };
 
+  
+  
+
   export const fetchZutatenListe = async (): Promise<Zutat[]> => {
     try {
       const response = await fetch('http://localhost:8080/zutat/list');
@@ -120,6 +126,35 @@ interface ZutatDerWoche {
       throw error;
     }
   };
+
+
+  export const fetchRezeptByIdImageCarousel= async (id: number): Promise<{ imageUrl: string }> => {
+    console.log(`Fetching image for Rezept with ID: ${id}`);
+    try {
+      const response = await fetch(`${API_URL}/rezepte/image/${id}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/octet-stream',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      // Erstelle einen Blob aus der Antwort
+      const blob = await response.blob();
+  
+      // Erstelle eine temporäre URL für den Blob
+      const imageUrl = URL.createObjectURL(blob);
+  
+      return { imageUrl };
+    } catch (error) {
+      console.error('Fehler beim Abrufen des Rezept-Bildes:', error);
+      throw error;
+    }
+  };
+  
 
 
 
@@ -204,6 +239,7 @@ export interface User {
   passwort: string;
   emailAdresse: string;
   foto: string
+  //flag?: number
 }
 
 export interface Recipe {
@@ -213,6 +249,8 @@ export interface Recipe {
   schwierigkeit: number;
   defaultPortionen: number;
   foto: string;
+  timer: { id: number }[]; // Timer ist jetzt ein Array
+  flag: 0;
   user_Id: {
     id: number;
     username: string;
@@ -221,7 +259,6 @@ export interface Recipe {
     foto: string;
   };
   durchschnittlicheBewertung: number;
-  flag: number;
   name: string;
   zutaten: {
     id: number;
@@ -251,7 +288,7 @@ export interface Recipe {
 }
 
 
-interface Einheit {
+export interface Einheit {
   id: number;
   name: string;
   abkuerzung: string;
@@ -308,7 +345,7 @@ export const fetchFullRezept = async (rezepteId: number): Promise<any> => {
 
 
 
-export const postRezept = async (newRecipe: Recipe): Promise<Recipe> => {
+export const postRezept = async (newRecipe: PostRezeptModel): Promise<Recipe> => {
   try {
     const response = await fetch(`${API_URL}/rezepte`, {
       method: 'POST',
@@ -323,12 +360,16 @@ export const postRezept = async (newRecipe: Recipe): Promise<Recipe> => {
       throw new Error(`Fehler beim Hinzufügen des Rezepts: ${response.statusText}. Details: ${errorDetails}`);
     }
 
-    return await response.json(); // Gibt das gespeicherte Rezept zurück
+    // Sicherstellen, dass die Antwort die erwarteten Rezeptdaten enthält
+    const savedRecipe: Recipe = await response.json();
+    return savedRecipe;
   } catch (error) {
     console.error('Fehler beim Hinzufügen des Rezepts:', error);
     throw error;
   }
 };
+
+
 
 // Funktion zum Bearbeiten eines Rezepts
 export const updateRezept = async (recipe: Recipe): Promise<Recipe> => {
@@ -409,9 +450,10 @@ export const fetchRezepte = async (): Promise<Recipe[]> => {
       anweisungen: rezept.anweisungen || '',
       zeit: rezept.zeit || 0,
       schwierigkeit: rezept.schwierigkeit || 0,
+      flag: rezept.flag || 0,
       defaultPortionen: rezept.defaultPortionen || 0,
       durchschnittlicheBewertung: rezept.durchschnittlicheBewertung || 0,
-      flag: rezept.flag || 0,
+      timer: rezept.timer ? rezept.timer : [],
       zutaten: rezept.zutaten ? rezept.zutaten : [],
       user_Id: rezept.user_Id
         ? {
@@ -470,7 +512,6 @@ interface Rezept {
     emailAdresse: string;
   };
   durchschnittlicheBewertung: number;
-  flag: number;
   name: string;
   zutaten: string[];
 }
@@ -497,25 +538,16 @@ export const postZutatDerWoche = async (zutatDerWoche: ZutatDerWoche): Promise<Z
   }
 };
 
-export const postZutat = async (zutat: Zutat): Promise<Zutat> => {
-  try {
-    const response = await fetch(`${API_URL}/zutat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(zutat),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Fehler beim Hinzufügen der Zutat: ${response.statusText}`);
-    }
-
-    return await response.json(); // Gibt die gespeicherte Zutat zurück
-  } catch (error) {
-    console.error('Fehler beim Hinzufügen der Zutat:', error);
-    throw error;
+export const postZutat = async (zutat: Zutat) => {
+  const response = await fetch('/api/zutaten', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...zutat }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to save ingredient');
   }
+  return response.json();
 };
 
 // services/api.ts

@@ -15,7 +15,6 @@ interface Recipe {
   schwierigkeit: number;
   defaultPortionen: number;
   durchschnittlicheBewertung: number;
-  flag: number;
   user_Id: {
     id: number;
     username: string;

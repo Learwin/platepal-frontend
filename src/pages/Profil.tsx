@@ -44,99 +44,90 @@ const Profil: React.FC = () => {
     };
 
     const handleSave = async () => {
-    if (!user || user.id === 0) {
-        setAlertMessage('Es kann nur ein bestehender Benutzer bearbeitet werden.');
-        setOpenSnackbar(true);
-        return;
-    }
-
-    try {
-        const updatedUser: User = {
-            ...user,
-            username: username.trim(),
-            emailAdresse: emailAdresse.trim(),
-            passwort: passwort.trim(),
-            //foto: profileImage || '',
-        };
-
-        console.log('Zu aktualisierender Benutzer:', updatedUser);
-
-        const updatedUserFromServer = await putUser(updatedUser);
-
-        if (!updatedUserFromServer || !updatedUserFromServer.id) {
-            console.error('Server hat keine gültigen Benutzerdaten zurückgegeben:', updatedUserFromServer);
-            setAlertMessage('Fehler: Ungültige Serverantwort.');
+        if (!user || user.id === 0) {
+            setAlertMessage('Es kann nur ein bestehender Benutzer bearbeitet werden.');
             setOpenSnackbar(true);
             return;
         }
 
-        console.log('Serverantwort:', updatedUserFromServer);
+        try {
+            const updatedUser: User = {
+                ...user,
+                username: username.trim(),
+                emailAdresse: emailAdresse.trim(),
+                passwort: passwort.trim(),
+            };
 
-        setUser(updatedUserFromServer);
-        console.log('Benutzerkontext erfolgreich aktualisiert.');
+            const updatedUserFromServer = await putUser(updatedUser);
 
-        setAlertMessage('Profil erfolgreich gespeichert!');
-        setOpenSnackbar(true);
-    } catch (error) {
-        console.error('Fehler beim Speichern des Profils:', error);
-        setAlertMessage('Fehler beim Speichern des Profils. Bitte versuche es erneut.');
-        setOpenSnackbar(true);
-    }
-};
+            if (!updatedUserFromServer || !updatedUserFromServer.id) {
+                setAlertMessage('Fehler: Ungültige Serverantwort.');
+                setOpenSnackbar(true);
+                return;
+            }
 
-    
-const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-        setAlertMessage('Keine Datei ausgewählt.');
-        setOpenSnackbar(true);
-        return;
-    }
+            setUser(updatedUserFromServer);
 
-    if (!user) {
-        setAlertMessage('Benutzer nicht gefunden.');
-        setOpenSnackbar(true);
-        return;
-    }
+            setAlertMessage('Profil erfolgreich gespeichert!');
+            setOpenSnackbar(true);
+        } catch (error) {
+            console.error('Fehler beim Speichern des Profils:', error);
+            setAlertMessage('Fehler beim Speichern des Profils. Bitte versuche es erneut.');
+            setOpenSnackbar(true);
+        }
+    };
 
-    console.log('Hochgeladene Datei:', file);
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+            setAlertMessage('Keine Datei ausgewählt.');
+            setOpenSnackbar(true);
+            return;
+        }
 
-    try {
-        // Schritt 1: Bildvorschau setzen
-        const imagePreviewUrl = URL.createObjectURL(file);
-        setProfileImage(imagePreviewUrl);
+        if (!user) {
+            setAlertMessage('Benutzer nicht gefunden.');
+            setOpenSnackbar(true);
+            return;
+        }
 
-        // Schritt 2: Bild hochladen
-        await uploadUserImage(user.id, file);
+        try {
+            const imagePreviewUrl = URL.createObjectURL(file);
+            setProfileImage(imagePreviewUrl);
 
-        // Schritt 3: Benutzerprofil aktualisieren mit statischem Pfad
-        const updatedUser: User = {
-            ...user,
-            foto: `./images/user/${file.name}`, 
-        };
+            await uploadUserImage(user.id, file);
 
-        setUser(updatedUser); // Lokale Benutzerdaten aktualisieren
+            const updatedUser: User = {
+                ...user,
+                foto: `./images/user/${file.name}`,
+            };
 
-        setAlertMessage('Bild erfolgreich hochgeladen und Profil aktualisiert.');
-        setOpenSnackbar(true);
-    } catch (error) {
-        console.error('Fehler beim Bild-Upload:', error);
-        setAlertMessage('Fehler beim Hochladen des Bildes.');
-        setOpenSnackbar(true);
-    }
-};
+            setUser(updatedUser);
 
+            setAlertMessage('Bild erfolgreich hochgeladen und Profil aktualisiert.');
+            setOpenSnackbar(true);
+        } catch (error) {
+            setAlertMessage('Fehler beim Hochladen des Bildes.');
+            setOpenSnackbar(true);
+        }
+    };
 
-    
+    const isAdmin = user?.flag === 1; // Überprüfe, ob der Benutzer ein Admin ist (flag === 1)
+
     return (
         <div className={styles.profilContainer}>
             <Box>
-                <Tabs value={activeTab} onChange={handleChange} centered className={styles.tabs}>
-                    <Tab label="Profil" className={styles.tab} />
-                    <Tab label="Rezepturverwaltung" className={styles.tab} />
-                    <Tab label="Zutatenverwaltung" className={styles.tab} />
-                    <Tab label="Zutat der Woche" className={styles.tab} />
-                </Tabs>
+            <Tabs 
+    value={activeTab} 
+    onChange={handleChange} 
+    centered 
+    className={styles.tabs}>
+    <Tab label="Profil" className={styles.tab} />
+    <Tab label="Rezepturverwaltung" className={styles.tab} />
+    {isAdmin && <Tab label="Zutatenverwaltung" className={styles.tab} />}
+    {isAdmin && <Tab label="Zutat der Woche" className={styles.tab} />}
+</Tabs>
+
                 <Box className={styles.tabContent}>
                     {activeTab === 0 && (
                         <div className={styles.profilContent}>
@@ -178,8 +169,8 @@ const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => 
                         </div>
                     )}
                     {activeTab === 1 && <Rezepturverwaltung />}
-                    {activeTab === 2 && <Zutatenverwaltung />}
-                    {activeTab === 3 && <ZutatDerWoche />}
+                    {activeTab === 2 && isAdmin && <Zutatenverwaltung />}
+                    {activeTab === 3 && isAdmin && <ZutatDerWoche />}
                 </Box>
             </Box>
 
@@ -198,3 +189,6 @@ const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => 
 };
 
 export default Profil;
+
+
+//Profil vom registrierten nutzer daten holen

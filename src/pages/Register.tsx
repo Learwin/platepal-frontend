@@ -1,19 +1,19 @@
+// Register.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Pfad anpassen
-import styles from '../Anmeldung.module.css'; // Anpassen für den richtigen Pfad
-import Logo from '../assets/images/Logo.png'; // Ersetzen durch den richtigen Pfad
+import { useNavigate } from 'react-router-dom';
+import styles from '../Anmeldung.module.css'; 
+import Logo from '../assets/images/Logo.png'; 
 import { useAuth } from '../context/AuthContextType';
 
 const Register: React.FC = () => {
     const [emailAdresse, setEmail] = useState<string>('');
     const [passwort, setPassword] = useState<string>('');
     const [username, setUser] = useState<string>('');
-    const { setIsLoggedIn } = useAuth(); // Zugreifen auf die Funktion, um isLoggedIn zu setzen
+    const { setIsLoggedIn, setUser: setAuthUser } = useAuth(); // setUser aus AuthContext verwenden
     const navigate = useNavigate();
 
-    const handleNavigateToVerwaltung = (): void => {
-        navigate("/profil"); // Weiterleitung zur Verwaltungsseite
-        console.log("Registrierung erfolgreich - Weiterleitung zur Verwaltungsseite");
+    const handleNavigateToProfil = (): void => {
+        navigate("/profil"); // Weiterleitung zur Profilseite
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,12 +29,13 @@ const Register: React.FC = () => {
             });
 
             if (response.ok) {
-                console.log("Registrierung ok");
+                const userData = await response.json(); // Benutzerdaten aus der API erhalten
+                setAuthUser(userData); // Benutzerdaten im AuthContext speichern
                 setIsLoggedIn(true); // Benutzer als eingeloggt markieren
-                handleNavigateToVerwaltung(); // Redirect nach erfolgreicher Anmeldung
+                handleNavigateToProfil(); // Weiterleitung zur Profilseite
             } else {
                 console.error('Registrierung fehlgeschlagen');
-                // handle error, e.g., show a message to the user
+                // Fehlerbehandlung, z.B. Fehlermeldung anzeigen
             }
         } catch (error) {
             console.error('An error occurred:', error);

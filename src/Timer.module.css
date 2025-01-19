@@ -1,0 +1,61 @@
+/* Container für den Timer */
+.timerContainer {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Timer Item */
+.timerItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+/* Timer Input */
+.timerItem input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+/* Timer Input Focus */
+.timerItem input:focus {
+    outline: none;
+    border-color: #4caf50;
+}
+
+/* Anzeige der aktuellen Timerwerte */
+.timerDetails {
+    font-size: 16px;
+    color: #333;
+    margin-top: 20px;
+}
+
+/* Button für den Timer */
+.timerButton {
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.timerButton:hover {
+    background-color: #45a049;
+}

@@ -54,6 +54,7 @@
 }
 
 /* Formularbereich */
+/* Formularbereich */
 .rezeptForm {
     display: flex;
     flex-direction: column;
@@ -65,28 +66,16 @@
 
 /* Textfelder im Formular */
 .rezeptInput {
-    width: 100%;
     background-color: #F1F1F1 !important;
     padding: 10px;
     border: 1px solid #ccc !important;
     border-radius: 4px;
+    font-size: 16px; /* Textgröße für Eingabefelder */
 }
 
-
-.rezeptInput label {
-    font-weight: bold;
-}
-
-.rezeptInput input {
-    font-size: 16px;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-.rezeptInput input:focus {
+.rezeptInput:focus {
     outline: none;
-    border-color: #4caf50 !important;
+    border-color: #4caf50 !important; /* Grüner Rahmen bei Fokus */
 }
 
 /* Speichern-Button */
@@ -183,4 +172,73 @@
     background-color: #4caf50 !important; /* Grünes Design */
     color: white;
   }
-  
+
+
+
+
+
+  /* Zutaten Container */
+/* Zutaten Container */
+.zutatenContainer {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Zutaten Liste */
+.zutatenList {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+}
+
+/* Zutat Item */
+.zutatenItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9 !important;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Zutat Input (Textfelder für Menge und Zutat) */
+.zutatenInput {
+    background-color: #F1F1F1 !important;
+    padding: 10px;
+    border: 1px solid #ccc !important;
+    border-radius: 4px;
+    font-size: 16px; /* Textgröße für Eingabefelder */
+}
+
+.zutatenInput:focus {
+    outline: none;
+    border-color: #4caf50 !important; /* Grüner Rahmen bei Fokus */
+}
+
+/* Button zum Hinzufügen */
+.addZutatButton {
+    background-color: #4caf50 !important; /* Grüner Hintergrund */
+    color: white; /* Weiße Schrift */
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.addZutatButton:hover {
+    background-color: #45a049 !important; /* Etwas dunkleres Grün beim Hover */
+}
+
+/* Chip Container */
+.chipContainer {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}

@@ -1,26 +1,23 @@
 /* Container für das gesamte Profil */
 .profilContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 800px; /* Feste Breite */
-    padding: 20px;
+    display: flex; /* Flexbox-Layout aktivieren */
+    flex-direction: column; /* Elemente untereinander anordnen */
+    align-items: center; /* Inhalte zentrieren */
+    max-width: 800px; /* Feste maximale Breite */
+    padding: 20px; /* Innenabstand */
+    gap: 20px; /* Abstand zwischen den Elementen */
     background-color: transparent; /* Optional: Hintergrundfarbe */
 }
-
 
 /* Tabs */
 .tabs {
     background-color: #383D3B !important; /* Hintergrundfarbe für die Tabs */
     border-radius: 4px; /* Optionale Abrundung */
     padding: 8px; /* Abstand um die Tabs */
-    width: 100%;
-    max-width: 800px; /* Maximalgröße, um Overflow zu verhindern */
     margin-bottom: 20px;
-    align-content: center;
     display: flex;
-    justify-content: space-around; /* Breite ausdehnen und verteilen */
+    justify-content: space-around; /* Gleiche Verteilung der Tab-Elemente */
+    box-sizing: border-box; /* Padding in Breite einberechnen */
 }
 
 .tab {
@@ -43,11 +40,37 @@
 
 /* Tab-Inhalt */
 .tabContent {
-    width: 100%;
-    max-width: 800px;
-    padding: 20px;
-    border-radius: 8px;
+    min-height: 600px; /* Mindesthöhe für stabilen Container */
+    display: flex; /* Flexbox-Layout aktivieren */
+    flex-direction: column; /* Inhalte untereinander anordnen */
+    align-items: center; /* Inhalte zentrieren */
+    justify-content: flex-start; /* Inhalte oben ausrichten */
+    padding: 20px; /* Innenabstand um die Inhalte */
+    border-radius: 8px; /* Abrundung der Ecken */
+    box-sizing: border-box; /* Padding in Breite und Höhe einbeziehen */
+    overflow: hidden; /* Verhindere Überschreitungen */
+    gap: 100px; /* Abstand zwischen den Elementen */
 }
+
+
+/* Profil-Inhalt */
+.profilContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    width: 100%;
+    max-width: 400px; /* Inhalt begrenzen */
+}
+
+/* Eingabefelder */
+.textField {
+    width: 100%;
+    max-width: 400px; /* Feste Breite */
+    margin-bottom: 15px;
+    background-color: #F1F1F1 !important;
+}
+
 
 /* Profil-Inhalt */
 .profilContent {
