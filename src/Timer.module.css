@@ -45,7 +45,7 @@
 
 /* Button für den Timer */
 .timerButton {
-    background-color: #4caf50;
+    background-color: #E7B84B;
     color: white;
     font-weight: bold;
     padding: 10px 20px;
@@ -54,6 +54,7 @@
     border: none;
     text-align: center;
     transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
 
 .timerButton:hover {

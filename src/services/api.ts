@@ -345,7 +345,7 @@ export const fetchFullRezept = async (rezepteId: number): Promise<any> => {
 
 
 
-export const postRezept = async (newRecipe: PostRezeptModel): Promise<Recipe> => {
+export const postRezept = async (newRecipe: PostRezeptModel) : Promise<Recipe> => {
   try {
     const response = await fetch(`${API_URL}/rezepte`, {
       method: 'POST',
@@ -425,12 +425,6 @@ export const deleteRezepte = async (rezepteId: number): Promise<void> => {
     throw error; // Fehler weiterleiten
   }
 };
-
-
-
-
-
-
 
 
 

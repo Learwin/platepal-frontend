@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Box, List, ListItem, ListItemText, Divider, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Chip, Stack, Avatar, Typography } from '@mui/material';
-import { deleteRezepte, fetchRezepte, postRezept, updateRezept, Recipe, fetchEinheiten, fetchZutatenListe, Zutat, uploadImage, fetchRezeptByIdImage } from '../services/api';
+import { deleteRezepte, fetchRezepte, postRezept, updateRezept, Recipe, fetchEinheiten, fetchZutatenListe, Zutat, uploadImage, fetchRezeptByIdImage, fetchFullRezept } from '../services/api';
 import { useAuth } from '../context/AuthContextType'; // AuthContext importieren
 import styles from '../Rezepturverwaltung.module.css';
 import { CirclePlus } from 'lucide-react';
@@ -60,7 +60,7 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
   const [addedChips, setAddedChips] = useState<{ id: number, name: string }[]>([]);
   const [completeZutaten, setCompleteZutaten] = useState<PostZutatenModel[]>([]); // Neuer State für vollständige Zutaten
-
+  const [isZutatFormIsVisible, setIsZutatFormVisible] = useState<boolean>(false);
   
 
   // Verwende den AuthContext, um den eingeloggten Benutzer abzurufen
@@ -123,7 +123,7 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
     loadZutaten();
   
     if (currentRezept.id !== 0) {
-      console.log("Zutaten des bearbeiteten Rezepts:", newRecipe.zutaten);
+      console.log("Zutaten des bearbeiteten Rezepts:", currentRezept.zutaten);
     }
   }, [user, currentRezept.id]);  // recipes als Abhängigkeit hinzufügen, um sicherzustellen, dass die Bilder geladen werden, wenn Rezepte gesetzt werden
   
@@ -273,6 +273,7 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
   
   
   const handleZutatAdd = () => {
+    setIsZutatFormVisible(true);
     setNewRecipe((prevRecipe) => ({
       ...prevRecipe,
       zutaten: [...prevRecipe.zutaten, { id: 0, menge: 0, einheit: { id: 0 } }],
@@ -281,9 +282,9 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
 
   const handleSaveRecipe = async () => {
     if (!user) return;
-
+  
     const newRecipeData: PostRezeptModel = {
-      user_Id: user.id,
+      user_Id: user.id, // Benutzer-ID setzen
       name: newRecipe.name,
       anweisungen: newRecipe.anweisungen,
       zeit: newRecipe.zeit,
@@ -291,20 +292,26 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
       defaultPortionen: newRecipe.defaultPortionen,
       durchschnittlicheBewertung: 0,
       timer: newRecipe.timer,
-      zutaten: completeZutaten, // Verwende das separate Array für die vollständigen Zutaten
+      zutaten: completeZutaten, // Zutaten setzen
     };
-
+  
     try {
       console.log('Daten vor dem Speichern:', JSON.stringify(newRecipeData, null, 2));
-      const savedRecipe = await postRezept(newRecipeData);
-      console.log('Rezept erfolgreich gespeichert:', savedRecipe);
+      await postRezept(newRecipeData);
+      
+      console.log('Rezept erfolgreich gespeichert:', newRecipeData);
+  
+      // Sicherstellen, dass die zurückgegebenen Daten die Zutaten und User enthalten
+      console.log('Gespeichertes Rezept (mit Zutaten und User):', newRecipeData);
+  
+      //setRecipes(newRecipeData);
+      setAlertMessage('Rezept erfolgreich gespeichert!');
+      setOpenSnackbar(true);
+      setIsFormVisible(false);
     } catch (error) {
       console.error('Fehler beim Speichern des Rezepts:', error);
     }
   };
-
-  // ... JSX (bleibt im Wesentlichen gleich)
-
   
   
 
@@ -343,23 +350,28 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
   };
 
 
-const handleEdit = (id: number) => {
-  if (Array.isArray(recipes)) {
-    const recipeToEdit = recipes.find((recipe) => recipe.id === id);
-    if (recipeToEdit) {
-   /*   setNewRecipe({
-       // ...recipeToEdit,  // Spread the existing recipe data
-       // zutaten: recipeToEdit.zutaten || [],  // Ensure zutaten is always an array, even if empty
-        //foto: recipeToEdit.foto || ''  // Foto auch setzen
-      });*/
-      setIsFormVisible(true);
-    } else {
-      console.error('Rezept nicht gefunden:', id);
+  const handleEdit = async (id: number) => {
+    try {
+      // Rezeptdaten laden
+      const fullRecipe = await fetchFullRezept(id);
+  
+      if (fullRecipe) {
+        console.log('Vollständige Rezeptdaten geladen:', fullRecipe);
+  
+        // Setze das Rezept in den Formularstatus für die Bearbeitung
+        setNewRecipe({
+          ...fullRecipe, // Alle Felder des Rezepts übernehmen
+          zeit: fullRecipe.zeit, // Zahlen in Strings umwandeln für das Formular
+          schwierigkeit: fullRecipe.schwierigkeit,
+          defaultPortionen: fullRecipe.defaultPortionen,
+        });
+        setIsFormVisible(true); // Formular anzeigen
+      }
+    } catch (error) {
+      console.error('Fehler beim Laden des Rezepts:', error);
     }
-  } else {
-    console.error('Die Liste der Rezepte ist nicht verfügbar oder ungültig.');
-  }
-};
+  };
+  
 
 
 const handleOpenDialog = (recipeId: number) => {
@@ -504,7 +516,7 @@ return (
                 value={zutat.menge}
                 onChange={(e) => handleZutatTextChange(index, e, 'menge')}
                 fullWidth
-                className={styles.rezeptInput}
+                className={styles.rezeptForm}
               />
 
               <FormControl fullWidth className={styles.rezeptForm}>
@@ -521,6 +533,8 @@ return (
                 </Select>
               </FormControl>
             </div>
+
+            
 
             <Button
               variant="contained"
@@ -554,7 +568,7 @@ return (
         </div>
       </Box>
 
-      <Button variant="outlined" onClick={handleZutatAdd} className={styles.addZutatButton}>
+      <Button variant="outlined" onClick={handleZutatAdd} disabled={isZutatFormIsVisible} className={styles.addZutatButton} >
         Zutat Hinzufügen
       </Button>
 
@@ -643,3 +657,7 @@ return (
 );
 }
 export default Rezeptverwaltung;
+
+
+
+//Update fehlt

@@ -58,7 +58,7 @@
 .rezeptForm {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
     width: 100%; /* Anpassung an Container-Breite */
     max-width: 800px; /* Maximalbreite festlegen */
     margin-top: 20px;
@@ -230,6 +230,7 @@
     cursor: pointer;
     border: none;
     transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
 
 .addZutatButton:hover {
@@ -242,3 +243,8 @@
     gap: 10px;
     flex-wrap: wrap;
 }
+
+.timerMargin {
+    margin-top: 20px;
+
+  }
