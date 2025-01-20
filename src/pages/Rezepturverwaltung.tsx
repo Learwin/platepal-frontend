@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, Box, List, ListItem, ListItemText, Divider, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Chip, Stack, Avatar, Typography } from '@mui/material';
+import { Button, TextField, Box, List, ListItem, ListItemText, Divider, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Chip, Avatar } from '@mui/material';
 import { deleteRezepte, fetchRezepte, postRezept, updateRezept, Recipe, fetchEinheiten, fetchZutatenListe, Zutat, uploadImage, fetchRezeptByIdImage, fetchFullRezept } from '../services/api';
 import { useAuth } from '../context/AuthContextType'; // AuthContext importieren
 import styles from '../Rezepturverwaltung.module.css';
@@ -7,7 +7,6 @@ import { CirclePlus } from 'lucide-react';
 import UploadImageRezept from './UploadImageRezept';
 import { PostRezeptModel } from '../models/PostRezeptModel';
 import { PostZutatenModel } from '../models/PostZutatenModel';
-import { ClassNames } from '@emotion/react';
 import TimerControl from './TimerControl';
 import { PostTimerModel } from '../models/PostTimerModel';
 
@@ -66,10 +65,12 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
   // Verwende den AuthContext, um den eingeloggten Benutzer abzurufen
 
   const { user } = useAuth();
- 
   
 
   useEffect(() => {
+
+    
+  
     
     const loadRecipes = async () => {
       try {
@@ -102,25 +103,36 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
       }
     };
   
-    const fetchRecipeImages = async () => {
+    const fetchUserRecipes = async () => {
       try {
-        // Lade Bilder für alle Rezepte, die noch kein Bild haben
-        for (const recipe of recipes) {
-          if (!recipe.foto) {
-            await fetchAndSetRecipeImage(recipe.id);  // Bild für jedes Rezept abrufen
-          }
-        }
+        const userRecipes = await fetchRezepte(); // API-Aufruf zum Laden der Rezepte des Benutzers
+        console.log("Rezepte geladen:", userRecipes);
+    
+        // Lade die Bilder für alle Rezepte
+        const recipesWithImages = await Promise.all(
+          userRecipes.map(async (recipe) => {
+            try {
+              const { imageUrl } = await fetchRezeptByIdImage(recipe.id);
+              return { ...recipe, foto: imageUrl };
+            } catch (error) {
+              console.error(`Fehler beim Laden des Bildes für Rezept ${recipe.id}:`, error);
+              return recipe; // Rückgabe des Rezepts ohne Bild
+            }
+          })
+        );
+    
+        setRecipes(recipesWithImages);
       } catch (error) {
-        console.error('Fehler beim Laden der Rezeptbilder:', error);
+        console.error("Fehler beim Laden der Benutzerrezepte:", error);
       }
     };
-
     
   
     // Laden der Rezepte, Einheiten, Zutaten und Rezeptbilder
     loadRecipes();
     loadEinheiten();
     loadZutaten();
+    fetchUserRecipes();
   
     if (currentRezept.id !== 0) {
       console.log("Zutaten des bearbeiteten Rezepts:", currentRezept.zutaten);
@@ -281,6 +293,7 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
   };
 
   const handleSaveRecipe = async () => {
+    
     if (!user) return;
   
     const newRecipeData: PostRezeptModel = {
@@ -303,8 +316,10 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
   
       // Sicherstellen, dass die zurückgegebenen Daten die Zutaten und User enthalten
       console.log('Gespeichertes Rezept (mit Zutaten und User):', newRecipeData);
-  
-      //setRecipes(newRecipeData);
+
+      const updatedRecipes = await fetchRezepte(); // Deine Methode, um alle Rezepte zu laden
+      setRecipes(updatedRecipes);
+
       setAlertMessage('Rezept erfolgreich gespeichert!');
       setOpenSnackbar(true);
       setIsFormVisible(false);
@@ -661,3 +676,4 @@ export default Rezeptverwaltung;
 
 
 //Update fehlt
+//liste zum User aufrufen
