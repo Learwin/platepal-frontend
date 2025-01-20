@@ -28,27 +28,6 @@ const Rezeptverwaltung = () => {
 
     ],});
 
-const [currentRezept, serCurrentRezept] = useState<Recipe>({
-  id: 0,
-    name: '',
-    anweisungen: '',
-    zeit: 0,
-    schwierigkeit: 0,
-    defaultPortionen: 0,
-    foto: '',
-    user_Id: {
-      id: 0,
-      username: '',
-      passwort: '',
-      emailAdresse: '',
-      foto: '',
-    },
-    durchschnittlicheBewertung: 0,
-    flag: 0,
-    timer: [],
-    zutaten: [],
-  });
-
   const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>('');
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -68,10 +47,6 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
   
 
   useEffect(() => {
-
-    
-  
-    
     const loadRecipes = async () => {
       try {
         if (!user) return;
@@ -83,7 +58,7 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
         console.error('Fehler beim Laden der Rezepte:', error);
       }
     };
-  
+
     const loadEinheiten = async () => {
       try {
         const fetchedEinheiten = await fetchEinheiten();  // Einheiten abrufen
@@ -92,7 +67,7 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
         console.error('Fehler beim Laden der Einheiten:', error);
       }
     };
-  
+
     const loadZutaten = async () => {
       try {
         const data = await fetchZutatenListe();
@@ -102,7 +77,7 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
         console.error('Fehler beim Laden der Zutaten:', error);
       }
     };
-  
+
     const fetchUserRecipes = async () => {
       try {
         const userRecipes = await fetchRezepte(); // API-Aufruf zum Laden der Rezepte des Benutzers
@@ -126,27 +101,41 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
         console.error("Fehler beim Laden der Benutzerrezepte:", error);
       }
     };
-    
-  
-    // Laden der Rezepte, Einheiten, Zutaten und Rezeptbilder
     loadRecipes();
     loadEinheiten();
     loadZutaten();
     fetchUserRecipes();
-  
-    if (currentRezept.id !== 0) {
-      console.log("Zutaten des bearbeiteten Rezepts:", currentRezept.zutaten);
+}, [user]); // Nur von user abhängig
+
+// Funktion zum Setzen von newRecipe beim Bearbeiten
+const loadRecipeForEdit = async (id: number) => {
+    try {
+        const fullRecipe = await fetchFullRezept(id);
+        console.log("fullRecipe nach fetchFullRezept:", fullRecipe); // HIER!
+        if (fullRecipe) {
+            setNewRecipe(fullRecipe);
+            setCompleteZutaten(fullRecipe.zutaten)
+            setIsFormVisible(true);
+            console.log("newRecipe nach setnewRecipe", newRecipe)
+        } else {
+            console.error('Rezept mit der angegebenen ID wurde nicht gefunden:', id);
+        }
+    } catch (error) {
+        console.error('Fehler beim Laden des Rezepts:', error);
     }
-  }, [user, currentRezept.id]);  // recipes als Abhängigkeit hinzufügen, um sicherzustellen, dass die Bilder geladen werden, wenn Rezepte gesetzt werden
+};
+
+useEffect(() => {
+  console.log("newRecipe im useEffect:", newRecipe);
+}, [newRecipe]);
   
-  
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof PostRezeptModel) => {
-      // Hier wird newRecipe direkt aktualisiert
-      setNewRecipe({
-        ...newRecipe,
-        [field]: event.target.value, // Aktualisiere das Feld basierend auf der Eingabe
-      });
-    };
+const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof PostRezeptModel) => {
+  // Hier wird newRecipe direkt aktualisiert
+  setNewRecipe({
+    ...newRecipe,
+    [field]: event.target.value, // Aktualisiere das Feld basierend auf der Eingabe
+  });
+};
     
     const handleZutatSelectChange = (
       index: number,
@@ -344,14 +333,7 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
     }
 
     try {
-      // Prüfen, ob das Rezept dem Benutzer gehört
-      const recipeToDelete = recipes.find((recipe) => recipe.id === id && recipe.user_Id.id === user.id);
-      if (!recipeToDelete) {
-        setAlertMessage('Keine Berechtigung zum Löschen dieses Rezepts!');
-        setOpenSnackbar(true);
-        return;
-      }
-
+      
       await deleteRezepte(id);
 
       setRecipes(recipes.filter((recipe) => recipe.id !== id));
@@ -365,27 +347,13 @@ const [currentRezept, serCurrentRezept] = useState<Recipe>({
   };
 
 
-  const handleEdit = async (id: number) => {
-    try {
-      // Rezeptdaten laden
-      const fullRecipe = await fetchFullRezept(id);
+  const handleEdit = (id: number) => {
+    loadRecipeForEdit(id); // Diese Funktion aufrufen!
+};
+
   
-      if (fullRecipe) {
-        console.log('Vollständige Rezeptdaten geladen:', fullRecipe);
   
-        // Setze das Rezept in den Formularstatus für die Bearbeitung
-        setNewRecipe({
-          ...fullRecipe, // Alle Felder des Rezepts übernehmen
-          zeit: fullRecipe.zeit, // Zahlen in Strings umwandeln für das Formular
-          schwierigkeit: fullRecipe.schwierigkeit,
-          defaultPortionen: fullRecipe.defaultPortionen,
-        });
-        setIsFormVisible(true); // Formular anzeigen
-      }
-    } catch (error) {
-      console.error('Fehler beim Laden des Rezepts:', error);
-    }
-  };
+  
   
 
 
@@ -459,7 +427,7 @@ return (
         <TextField
           label="Rezept Name"
           variant="outlined"
-          value={newRecipe.name}
+          value={newRecipe.name || ""}
           onChange={(e) => handleInputChange(e, 'name')}
           fullWidth
           style={{ marginBottom: 15 }}
@@ -467,7 +435,7 @@ return (
         <TextField
           label="Anweisungen"
           variant="outlined"
-          value={newRecipe.anweisungen}
+          value={newRecipe.anweisungen || ""}
           onChange={(e) => handleInputChange(e, 'anweisungen')}
           fullWidth
           multiline
@@ -478,7 +446,7 @@ return (
           label="Zeit (Minuten)"
           variant="outlined"
           type="number"
-          value={newRecipe.zeit}
+          value={newRecipe.zeit || 0}
           onChange={(e) => handleInputChange(e, 'zeit')}
           fullWidth
           style={{ marginBottom: 15 }}
@@ -487,7 +455,7 @@ return (
           label="Schwierigkeit (1-5)"
           variant="outlined"
           type="number"
-          value={newRecipe.schwierigkeit}
+          value={newRecipe.schwierigkeit || 0}
           onChange={(e) => handleInputChange(e, 'schwierigkeit')}
           fullWidth
           style={{ marginBottom: 15 }}
@@ -496,7 +464,7 @@ return (
           label="Portionen"
           variant="outlined"
           type="number"
-          value={newRecipe.defaultPortionen}
+          value={newRecipe.defaultPortionen || 0}
           onChange={(e) => handleInputChange(e, 'defaultPortionen')}
           fullWidth
           style={{ marginBottom: 15 }}

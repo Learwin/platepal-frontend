@@ -128,6 +128,9 @@ interface ZutatDerWoche {
   };
 
 
+
+
+
   export const fetchRezeptByIdImageCarousel= async (id: number): Promise<{ imageUrl: string }> => {
     console.log(`Fetching image for Rezept with ID: ${id}`);
     try {
@@ -330,7 +333,7 @@ export const fetchEinheiten = async (): Promise<any[]> => {
 
 // src/services/rezeptService.ts
 
-export const fetchFullRezept = async (rezepteId: number): Promise<any> => {
+export const fetchFullRezept = async (rezepteId: number): Promise<PostRezeptModel> => {
   try {
     const response = await fetch(`${API_URL}/rezepte/full/${rezepteId}`);
     if (!response.ok) {
@@ -405,11 +408,10 @@ export const deleteRezepte = async (rezepteId: number): Promise<void> => {
   try {
     const response = await fetch(`${API_URL}/rezepte/${rezepteId}`, {
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+    },
     });
-
-    if (response.status === 404) {
-      throw new Error(`Rezept mit der ID ${rezepteId} wurde nicht gefunden.`);
-    }
 
     if (!response.ok) {
       throw new Error(`Fehler beim Löschen des Rezepts: ${response.statusText}`);
