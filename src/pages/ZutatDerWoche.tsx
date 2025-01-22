@@ -21,6 +21,7 @@ interface ZutatDerWocheData {
   von: string;
   bis: string;
   zutat: Zutat;
+  foto: string
 }
 
 const API_URL = 'http://localhost:8080';
@@ -112,6 +113,7 @@ const ZutatDerWoche: React.FC = () => {
       von: fromDate,
       bis: toDate,
       zutat: selectedZutatObj,
+      foto: ''
     };
 
     try {

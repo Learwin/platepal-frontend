@@ -1,57 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Grid, Typography } from '@mui/material';
-import styles from '../Startseite.module.css'; // CSS-Modul
-import {  fetchRezepte, fetchZutatDerWoche } from '../services/api'; // API-Funktionen
-import RezeptCarousel from './RezepteCarousel';
+import { fetchRezepte, fetchZutatDerWoche, Recipe } from '../services/api'; // Beispiel für API-Funktionen
+import styles from '../Startseite.module.css'; // Beispiel für CSS-Modul
 import Zutat from './Zutat'; // Zutat-Komponente importieren
+import RezepteCarousel from './RezepteCarousel';
 
-// Interface für Rezept
-interface Recipe {
+// Schnittstellen für Zutat und Zutat der Woche
+interface Zutat {
   id: number;
   name: string;
+  kcal: number;
+  fett: number;
+  gesaettigteFettsaeuren: number;
+  kohlenhydrate: number;
+  zucker: number;
+  ballaststoffe: number;
+  eiweiss: number;
+  salz: number;
   foto: string;
-  anweisungen: string;
-  zeit: number;
-  schwierigkeit: number;
-  defaultPortionen: number;
-  durchschnittlicheBewertung: number;
-  user_Id: {
-    id: number;
-    username: string;
-    passwort: string;
-    emailAdresse: string;
-    foto?: string;
-  };
-  zutaten: {
-    id: number;
-    name: string;
-    kcal: number;
-    fett: number;
-    gesaettigteFettsaeuren: number;
-    kohlenhydrate: number;
-    zucker: number;
-    ballaststoffe: number;
-    eiweiss: number;
-    salz: number;
-    foto: string;
-    allergene: {
-      id: number;
-      name: string;
-      zutaten: string[];
-    }[];
-    rezepte: string[];
-  }[];
 }
 
-// Interface für Zutat
-interface ZutatProps {
+interface ZutatDerWocheData {
+  id: number;
+  von: string;
+  bis: string;
+  zutat: Zutat;
+}
+
+interface ZutatDerWoche {
   id: number;
   name: string;
   imgUrl: string;
+  von: string;
+  bis: string;
+  zutat: Zutat;
 }
 
+const API_URL = 'http://localhost:8080';
+
 const Startseite: React.FC = () => {
-  const [zutatDerWoche, setZutatDerWoche] = useState<ZutatProps | null>(null);
+  const [zutatDerWoche, setZutatDerWoche] = useState<ZutatDerWoche | null>(null);
   const [rezepte, setRezepte] = useState<Recipe[]>([]);
 
   // Zutat der Woche und Rezepte laden
@@ -61,9 +49,12 @@ const Startseite: React.FC = () => {
         // Lade Zutat der Woche
         const zutatData = await fetchZutatDerWoche();
         setZutatDerWoche({
-          id: zutatData.zutat.id,
+          id: zutatData.id,
           name: zutatData.zutat.name,
           imgUrl: zutatData.zutat.foto,
+          von: zutatData.von,
+          bis: zutatData.bis,
+          zutat: zutatData.zutat, // Stellt sicher, dass die Zutat korrekt übergeben wird
         });
 
         // Lade Rezepte
@@ -96,9 +87,9 @@ const Startseite: React.FC = () => {
 
         {/* Rezept Carousel */}
         <Grid item xs={12} sm={6}>
-          <RezeptCarousel
+          <RezepteCarousel
             rezepte={rezepte}
-            zutatDerWocheId={zutatDerWoche?.id ?? 0}
+            zutatDerWoche={zutatDerWoche} // Übergabe der vollständigen Zutat
           />
         </Grid>
       </Grid>

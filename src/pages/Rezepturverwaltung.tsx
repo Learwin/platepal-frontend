@@ -606,7 +606,8 @@ return (
               </Button>
 
               {/* Bild hochladen Button */}
-              <Button onClick={() => handleOpenDialog(recipe.id)}>
+              <Button onClick={() => handleOpenDialog(recipe.id)}
+                className={styles.imageButton}>
                 Bild Hochladen
               </Button>
             </ListItem>

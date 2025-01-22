@@ -7,6 +7,7 @@ interface ZutatDerWoche {
   id: number;
   von: string;
   bis: string;
+  foto: string;
   zutat: {
     id: number;
     name: string;
@@ -334,6 +335,19 @@ export const fetchEinheiten = async (): Promise<any[]> => {
 // src/services/rezeptService.ts
 
 export const fetchFullRezept = async (rezepteId: number): Promise<PostRezeptModel> => {
+  try {
+    const response = await fetch(`${API_URL}/rezepte/full/${rezepteId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json(); // Antwort als JSON-Objekt zurückgeben
+  } catch (error) {
+    console.error('Error fetching full recipe:', error);
+    throw error;
+  }
+};
+
+export const fetchFullRezeptCarousel = async (rezepteId: number): Promise<Recipe> => {
   try {
     const response = await fetch(`${API_URL}/rezepte/full/${rezepteId}`);
     if (!response.ok) {

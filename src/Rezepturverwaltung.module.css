@@ -131,12 +131,12 @@
 
 .editRezeptButton {
     border-color: #E7B84B !important;
-    color: #E7B84B;
+    color: #E7B84B !important;
   }
   
   .editRezeptButton:hover {
     background-color: #E7B84B !important;
-    color: white;
+    color: white !important;
   }
   
   /* Delete Button */
@@ -149,6 +149,8 @@
     background-color: #FF7033 !important;
     color: white !important;
   }
+
+   
 
   .actionBox {
     display: flex;
