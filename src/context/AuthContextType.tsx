@@ -28,8 +28,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Benutzer beim Setzen von setUser behandeln
     const handleSetUser = (user: User | null) => {
-        if (user && user.id === 14) {
-            user.flag = 1; // Beispiel: Admin-Flag setzen, wenn die ID 14 ist
+        if (user) {
+            setIsLoggedIn(true); // Wenn ein Benutzer gesetzt wird, ist er eingeloggt
+            if (user.id === 14) {
+                user.flag = 1; // Beispiel: Admin-Flag setzen, wenn die ID 14 ist
+            }
+        } else {
+            setIsLoggedIn(false); // Wenn der Benutzer null ist, ist er abgemeldet
         }
         setUser(user);
     };
@@ -49,3 +54,5 @@ export const useAuth = (): AuthContextType => {
     }
     return context;
 };
+
+export default AuthContextType;

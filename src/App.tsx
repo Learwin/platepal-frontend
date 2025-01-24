@@ -9,6 +9,7 @@ import { AuthProvider } from './context/AuthContextType';
 import RezeptDetails from './pages/RezeptDetails';
 import { CartProvider } from './context/CartContext';
 import { CheckedProvider } from './context/CheckedContext';
+import SearchRecipe from './pages/SearchRecipe';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>(''); // searchTerm verwalten
@@ -21,7 +22,8 @@ function App() {
           <Route path="/" element={<Layout />}> {/* searchTerm an Layout weitergeben */}
               <Route index element={<Startseite />} /> {/* searchTerm an Startseite weitergeben */}
               <Route path="home" element={<Startseite />} />
-              
+              <Route path="/search/:searchTerm" element={<SearchRecipe />} />
+
               <Route path="/rezept/:rezeptId" element={<RezeptDetails />} />
               <Route path="profil" element={<Profil />} />
             </Route>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Grid, Card, CardMedia, CardContent, Typography, Box } from '@mui/material';
 import { Flame, Star, User } from 'lucide-react';
 import { fetchRezepteByName } from '../services/api';
-import styles from '../SearchRecipe.module.css'
+import styles from '../SearchRecipe.module.css';
 
 interface Rezept {
   id: number;
@@ -16,11 +16,8 @@ interface Rezept {
   name: string;
 }
 
-interface SearchRecipeProps {
-  searchTerm: string; // Der Suchbegriff wird als Prop übergeben
-}
-
-const SearchRecipe: React.FC<SearchRecipeProps> = ({ searchTerm }) => {
+const SearchRecipe: React.FC = () => {
+  const { searchTerm } = useParams(); // Hole den searchTerm aus der URL
   const [searchResults, setSearchResults] = useState<Rezept[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -28,7 +25,7 @@ const SearchRecipe: React.FC<SearchRecipeProps> = ({ searchTerm }) => {
   // Rezepte anhand des Suchbegriffs abrufen
   useEffect(() => {
     const fetchResults = async () => {
-      if (searchTerm.trim()) {
+      if (searchTerm && searchTerm.trim()) {
         setIsLoading(true);
         try {
           const data = await fetchRezepteByName(searchTerm); // Verwende den Suchbegriff
@@ -48,7 +45,7 @@ const SearchRecipe: React.FC<SearchRecipeProps> = ({ searchTerm }) => {
   }, [searchTerm]); // Aktualisiere Ergebnisse bei Änderungen des Suchbegriffs
 
   // Keine Ergebnisse anzeigen, wenn kein Suchbegriff eingegeben wurde
-  if (!searchTerm.trim()) {
+  if (!searchTerm || !searchTerm.trim()) {
     return null;
   }
 
@@ -59,7 +56,7 @@ const SearchRecipe: React.FC<SearchRecipeProps> = ({ searchTerm }) => {
   return (
     <Container maxWidth="lg" sx={{ padding: '24px 0' }}>
       <Typography variant="h4" gutterBottom className={styles.zutatBalken}>
-       Suchergebnisse für "{searchTerm}"
+        Suchergebnisse für "{searchTerm}"
       </Typography>
 
       {isLoading ? (
@@ -71,54 +68,54 @@ const SearchRecipe: React.FC<SearchRecipeProps> = ({ searchTerm }) => {
           {searchResults && searchResults.length > 0 ? (
             searchResults.map((rezept) => (
               <Grid item xs={12} sm={6} md={4} key={rezept.id}>
-                  <Card
-                    sx={{
-                      padding: 4,
-                      borderRadius: 4,
-                      boxShadow: 3,
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                    onClick={() => handleClick(rezept.id)} // Klickhandler hinzufügen
-                  >
-                    <CardMedia
-                      component="img"
-                      alt={rezept.name}
-                      height="150"
-                      image={rezept.foto || '/placeholder-image.jpg'}
-                      sx={{ objectFit: 'cover' }}
-                    />
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography variant="h6" gutterBottom>
-                        {rezept.name}
+                <Card
+                  sx={{
+                    padding: 4,
+                    borderRadius: 4,
+                    boxShadow: 3,
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                  onClick={() => handleClick(rezept.id)} // Klickhandler hinzufügen
+                >
+                  <CardMedia
+                    component="img"
+                    alt={rezept.name}
+                    height="150"
+                    image={rezept.foto || '/placeholder-image.jpg'}
+                    sx={{ objectFit: 'cover' }}
+                  />
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" gutterBottom>
+                      {rezept.name}
+                    </Typography>
+                    <Box display="flex" alignItems="center" marginBottom={2}>
+                      <Typography variant="body1" marginRight={2}>
+                        Schwierigkeit:
                       </Typography>
-                      <Box display="flex" alignItems="center" marginBottom={2}>
-                        <Typography variant="body1" marginRight={2}>
-                          Schwierigkeit:
-                        </Typography>
-                        {[...Array(rezept.schwierigkeit)].map((_, index) => (
-                          <Flame key={`schwierigkeit-${index}`} size={16} style={{ marginRight: 4 }} />
-                        ))}
-                      </Box>
-                      <Box display="flex" alignItems="center" marginBottom={2}>
-                        <Typography variant="body1" marginRight={2}>
-                          Portionen:
-                        </Typography>
-                        {[...Array(rezept.defaultPortionen)].map((_, index) => (
-                          <User key={`portionen-${index}`} size={16} style={{ marginRight: 4 }} />
-                        ))}
-                      </Box>
-                      <Box display="flex" alignItems="center" marginBottom={2}>
-                        <Typography variant="body1" marginRight={2}>
-                          Bewertungen:
-                        </Typography>
-                        {[...Array(rezept.durchschnittlicheBewertung)].map((_, index) => (
-                          <Star key={`bewertungen-${index}`} size={16} style={{ marginRight: 4 }} />
-                        ))}
-                      </Box>
-                    </CardContent>
-                  </Card>
+                      {[...Array(rezept.schwierigkeit)].map((_, index) => (
+                        <Flame key={`schwierigkeit-${index}`} size={16} style={{ marginRight: 4 }} />
+                      ))}
+                    </Box>
+                    <Box display="flex" alignItems="center" marginBottom={2}>
+                      <Typography variant="body1" marginRight={2}>
+                        Portionen:
+                      </Typography>
+                      {[...Array(rezept.defaultPortionen)].map((_, index) => (
+                        <User key={`portionen-${index}`} size={16} style={{ marginRight: 4 }} />
+                      ))}
+                    </Box>
+                    <Box display="flex" alignItems="center" marginBottom={2}>
+                      <Typography variant="body1" marginRight={2}>
+                        Bewertungen:
+                      </Typography>
+                      {[...Array(rezept.durchschnittlicheBewertung)].map((_, index) => (
+                        <Star key={`bewertungen-${index}`} size={16} style={{ marginRight: 4 }} />
+                      ))}
+                    </Box>
+                  </CardContent>
+                </Card>
               </Grid>
             ))
           ) : (

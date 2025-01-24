@@ -220,9 +220,6 @@ if (!filteredRezepte || filteredRezepte.length === 0) {
             <Typography gutterBottom variant="h6" component="div">
               {fullRezept.rezept.name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {fullRezept.rezept.anweisungen}
-            </Typography>
           </CardContent>
         </Card>
       </Box>

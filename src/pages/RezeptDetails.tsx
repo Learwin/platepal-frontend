@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Card, CardMedia, CardContent, Typography, Box, Button,
   FormControlLabel, Grid, Container, Checkbox,
   Tooltip,
-  IconButton
+  IconButton,
+  Snackbar
 } from '@mui/material';
 import { fetchRezeptByIdImage, fetchTimer } from '../services/api'; // fetchFullRezeptDetails importiert
 import styles from '../RezeptDetails.module.css';
@@ -13,6 +14,9 @@ import { useCart } from '../context/CartContext';
 import { useCheckedContext } from '../context/CheckedContext';
 import NaehrwerteRezepte from './NaehrwerteRezepte';
 import InfoIcon from '@mui/icons-material/Info';
+import BewertungForm from '../context/BewertungForm';
+import AuthContextType, { useAuth } from '../context/AuthContextType';
+import Timer from '../context/Timer';
 
 // Interfaces (Bitte an deine tatsächlichen Interfaces anpassen!)
 interface Zutat {
@@ -26,10 +30,21 @@ interface Einheit {
   name: string;
 }
 
+interface User {
+  id: number;
+}
+
 interface ZutatMenge {
   menge: number;
   einheit: Einheit;
   zutat: Zutat;
+}
+
+export interface PostTimerModel {
+  timer: {
+    zeit: number;  // Zeit in Minuten (Float)
+  };
+  position: number;  // Position des Timers im Rezept
 }
 
 interface Rezept {
@@ -42,12 +57,13 @@ interface Rezept {
   durchschnittlicheBewertung: number;
   name: string;
   zutat: ZutatMenge[];
+  userId: User;
 }
 
 interface RezeptMitZutaten {
   rezept: Rezept;
   zutatMengeList: ZutatMenge[];
-  timerPositionList: any[]; // Hier den korrekten Typ verwenden, falls vorhanden
+  timerPositionList: PostTimerModel[]; // Hier den korrekten Typ verwenden, falls vorhanden
 }
 
 interface Naehrwerte {
@@ -106,6 +122,8 @@ const RezeptDetails: React.FC = () => {
   const { addItemToCart, removeItemFromCart } = useCart();
   const { setCheckedCount } = useCheckedContext();
 
+  const { user, isLoggedIn } = useAuth();
+
   useEffect(() => {
     if (rezeptId) {
         const rezeptIdNumber = Number(rezeptId);
@@ -118,7 +136,8 @@ const RezeptDetails: React.FC = () => {
             if (fullRezeptData) {
                 setFullRezept(fullRezeptData);
                 console.log("Full Rezept Daten:", fullRezeptData); // Wichtig!
-                setRemainingTime(fullRezeptData.rezept.zeit || 0);
+                const timerZeit = fullRezeptData.timerPositionList?.[0]?.timer?.zeit || 0; // Wenn der Zeitwert 0 oder undefined ist, setze 30
+        setRemainingTime(timerZeit);
             } else {
                 console.error('Keine Rezeptdaten gefunden');
                 setFullRezept(null);
@@ -138,33 +157,36 @@ const RezeptDetails: React.FC = () => {
       }
     }, [rezeptId]);
 
-  const handleCheckboxChange = (zutatId: number, zutatName: string) => {
-    setCheckedZutaten((prev) => {
-      const newChecked = new Set(prev);
-      if (newChecked.has(zutatId)) {
-        newChecked.delete(zutatId);
-        removeItemFromCart(zutatId);
-      } else {
-        newChecked.add(zutatId);
-        addItemToCart({ id: zutatId, name: zutatName, quantity: 1 });
-      }
-      setCheckedCount(newChecked.size);
-      return newChecked;
-    });
-  };
-
-  const startTimer = () => {
-    if (fullRezept && fullRezept.rezept.zeit > 0) {
-      fetchTimer(fullRezept.rezept.zeit)
-        .then((response) => console.log('Timer gestartet:', response))
-        .catch((error) => {
-          console.error('Fehler beim Starten des Timers:', error);
-          alert('Fehler beim Starten des Timers. Bitte versuche es erneut.');
-        });
-    } else {
-      alert('Keine gültige Kochzeit verfügbar.');
-    }
-  };
+    const handleCheckboxChange = (
+      zutatId: number, 
+      zutatName: string, 
+      einheitName: string, 
+    ) => {
+      setCheckedZutaten((prev) => {
+        const newChecked = new Set(prev);
+    
+        if (newChecked.has(zutatId)) {
+          // Zutat abwählen und aus dem Warenkorb entfernen
+          newChecked.delete(zutatId);
+          removeItemFromCart(zutatId); // Entferne die Zutat aus dem Warenkorb
+        } else {
+          // Zutat auswählen und mit der tatsächlichen Menge hinzufügen
+          newChecked.add(zutatId);
+          addItemToCart({
+            id: zutatId,
+            name: zutatName,
+            
+            quantity: 1
+          });
+        }
+    
+        setCheckedCount(newChecked.size); // Anzahl der ausgewählten Zutaten aktualisieren
+        return newChecked;
+      });
+    };
+    
+    
+    
 
   if (!fullRezept) {
     return (
@@ -227,23 +249,30 @@ const RezeptDetails: React.FC = () => {
                 ))}
               </Box>
               <Box display="flex" alignItems="center" marginBottom={2}>
-                <Typography variant="body1" marginRight={2}>Portionen:</Typography>
+                <Typography variant="body1" marginRight={2}>Bewertung:</Typography>
                 {[...Array(fullRezept.rezept.durchschnittlicheBewertung || 0)].map((_, index) => (
-                  <Star key={`bewertungen-${index}`} size={24} style={{ marginRight: 4 }} />
+                  <Star key={`bewertung-${index}`} size={24} style={{ marginRight: 4 }} />
                 ))}
               </Box>
-              <Button
-                variant="contained"
-                color="primary"
-                className={styles.cardButton}
-                onClick={startTimer}
-              >
-                <Microwave size={20} style={{ marginRight: 8 }} />
-                Kochzeit: {remainingTime} Minuten
-              </Button>
+              <Box display="flex" alignItems="center" marginBottom={2}>
+               {isLoggedIn ? (
+  <BewertungForm rezeptId={fullRezept.rezept.id} userId={user ? user.id : 0} />
+) : (
+  <Typography variant="body2" color="error">
+      Du musst dich anmelden, um eine Bewertung abzugeben.
+    </Typography>
+)}
+              </Box>
+
+            
+              <Box display="flex" flexDirection="column" alignItems="center" padding={3}>
+              <Timer initialTime={fullRezept.timerPositionList?.[0]?.timer?.zeit || 0} /> {/* Timer-Komponente */}
+            </Box>
             </Box>
           </Card>
+          
           {/* Tooltip mit Nährwerten */}
+
           
         </Grid>
      
@@ -260,10 +289,11 @@ const RezeptDetails: React.FC = () => {
                       key={zutatMenge.zutat.id}
                       control={
                         <Checkbox
-                          checked={checkedZutaten.has(zutatMenge.zutat.id)}
-                          onChange={() => handleCheckboxChange(zutatMenge.zutat.id, zutatMenge.zutat.name)}
-                          name={zutatMenge.zutat.name}
-                        />
+  checked={checkedZutaten.has(zutatMenge.zutat.id)}
+  onChange={() => handleCheckboxChange(zutatMenge.zutat.id, zutatMenge.zutat.name, zutatMenge.einheit.name)}
+  name={zutatMenge.zutat.name}
+/>
+
                       }
                       label={`${zutatMenge.zutat.name} (${zutatMenge.menge} ${zutatMenge.einheit.name})`}
                     />

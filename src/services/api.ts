@@ -50,6 +50,36 @@ interface ZutatDerWoche {
     zutaten?: string[];
   }
 
+  export const postBewertung = async (newBewertung: {
+    anzahl_Sterne: number;
+    foto: string;
+    rezept_id: { id: number };
+    user_Id: { id: number };
+  }): Promise<any> => {
+    try {
+      const response = await fetch(`${API_URL}/bewertung`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newBewertung),
+      });
+  
+      if (!response.ok) {
+        const errorDetails = await response.text();
+        throw new Error(`Fehler beim Absenden der Bewertung: ${response.statusText}. Details: ${errorDetails}`);
+      }
+  
+      // Sicherstellen, dass die Antwort die erwarteten Daten enthält
+      const savedBewertung = await response.json();
+      return savedBewertung;
+    } catch (error) {
+      console.error('Fehler beim Absenden der Bewertung:', error);
+      throw error;
+    }
+  };
+  
+
   export const fetchRezepteByName = async (searchTerm: string): Promise<Rezept[]> => {
       try {
         const encodedSearchTerm = encodeURIComponent(searchTerm); // URL-Kodierung!
