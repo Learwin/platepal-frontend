@@ -49,6 +49,32 @@ interface ZutatDerWoche {
     name: string;
     zutaten?: string[];
   }
+
+  export const fetchRezepteByName = async (searchTerm: string): Promise<Rezept[]> => {
+      try {
+        const encodedSearchTerm = encodeURIComponent(searchTerm); // URL-Kodierung!
+        const response = await fetch(`${API_URL}/rezepte/byname?name=${encodedSearchTerm}`);
+    
+        if (!response.ok) {
+          // Detailliertere Fehlerbehandlung
+          const errorText = await response.text(); // Versuche, den Fehlertext vom Server zu lesen
+          throw new Error(`HTTP error ${response.status}: ${errorText || response.statusText}`);
+        }
+    
+        const data = await response.json();
+        
+          if(Array.isArray(data['content'])){
+              return data['content'];
+          } else {
+              console.error("Unerwartetes Datenformat vom Server:", data)
+              return [];
+          }
+    
+      } catch (error) {
+        console.error('Fehler beim Abrufen der Suchergebnisse:', error);
+        return []; // Gib ein leeres Array zurück, um Fehler in der Komponente zu vermeiden
+      }
+    };
   
 
   export const fetchZutatById = async (id: number): Promise<ZutatDerWoche['zutat']> => {
@@ -335,6 +361,19 @@ export const fetchEinheiten = async (): Promise<any[]> => {
 // src/services/rezeptService.ts
 
 export const fetchFullRezept = async (rezepteId: number): Promise<PostRezeptModel> => {
+  try {
+    const response = await fetch(`${API_URL}/rezepte/full/${rezepteId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json(); // Antwort als JSON-Objekt zurückgeben
+  } catch (error) {
+    console.error('Error fetching full recipe:', error);
+    throw error;
+  }
+};
+
+export const fetchFullRezeptDetails = async (rezepteId: number): Promise<Recipe> => {
   try {
     const response = await fetch(`${API_URL}/rezepte/full/${rezepteId}`);
     if (!response.ok) {

@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Box, Typography, CircularProgress, Card, CardMedia, CardContent } from '@mui/material';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { fetchRezeptByIdImage } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
   id: number;
@@ -73,7 +77,7 @@ interface RezeptCarouselProps {
   zutatDerWoche: ZutatDerWoche;
 }
 
-const API_URL = 'http://localhost:8080'
+const API_URL = 'http://localhost:8080';
 
 export const fetchFullRezeptCarousel = async (rezepteId: number): Promise<RezeptMitZutaten> => {
   try {
@@ -81,15 +85,7 @@ export const fetchFullRezeptCarousel = async (rezepteId: number): Promise<Rezept
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    const fullRezept: RezeptMitZutaten = await response.json(); // Antwort als JSON-Objekt zurückgeben
-
-    // Sicherstellen, dass alle nötigen Daten vorhanden sind
-    if (!fullRezept.rezept || !fullRezept.zutatMengeList) {
-      throw new Error(`Fehlende Daten für Rezept ${rezepteId}`);
-    }
-
-    return fullRezept;
+    return response.json();
   } catch (error) {
     console.error('Fehler beim Laden des vollständigen Rezepts:', error);
     throw error;
@@ -98,104 +94,142 @@ export const fetchFullRezeptCarousel = async (rezepteId: number): Promise<Rezept
 
 
 
-
 const RezeptCarousel: React.FC<RezeptCarouselProps> = ({ rezepte, zutatDerWoche }) => {
   const [filteredRezepte, setFilteredRezepte] = useState<RezeptMitZutaten[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+  const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({}); // State für die Bild-URLs
+
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
+
+  const handleClick = (rezeptId: number) => {
+    navigate(`/rezept/${rezeptId}`);
+  };
+
 
   useEffect(() => {
     const fetchAndFilterRezepte = async () => {
-      try {
-        const matchingRezepte: RezeptMitZutaten[] = [];
-        console.log('Zutat der Woche:', zutatDerWoche);
-        console.log('Alle Rezepte:', rezepte);
-  
-        for (const rezept of rezepte) {
-          try {
-            const fullRezept = await fetchFullRezeptCarousel(rezept.id);
-            console.log('Lade vollständiges Rezept:', fullRezept);
-  
-            // Sicherstellen, dass Zutaten immer vorhanden sind
-            const zutatenListe = fullRezept?.zutatMengeList || [];
-  
-            if (zutatenListe.length > 0) {
-              const containsZutat = zutatenListe.some((zutatMenge) => {
-                return (
-                  zutatMenge.zutat.name.trim().toLowerCase() ===
-                  zutatDerWoche.name.trim().toLowerCase()
-                );
-              });
-  
-              console.log(`Rezept ${rezept.id} enthält Zutat der Woche:`, containsZutat);
-  
-              if (containsZutat) {
-                matchingRezepte.push(fullRezept);
-              }
-            } else {
-              console.warn(`Rezept ${rezept.id} hat keine Zutaten oder zutatMengeList ist leer.`);
-            }
-          } catch (error) {
-            console.error(`Fehler beim Laden des vollständigen Rezepts für ID ${rezept.id}:`, error);
-            // Hier wird der Fehler für dieses Rezept protokolliert, aber der Schleifenprozess wird fortgesetzt
-          }
+        if (!rezepte || rezepte.length === 0 || !zutatDerWoche) {
+            setLoading(false);
+            return;
         }
-  
-        console.log('Gefilterte Rezepte:', matchingRezepte);
-        setFilteredRezepte(matchingRezepte);
-      } catch (err) {
-        console.error('Fehler beim Laden der Rezepte:', err);
-        setError('Fehler beim Laden der Rezepte.');
-      } finally {
-        setLoading(false);
-      }
+
+        setLoading(true);
+        try {
+            const matchingRezepte: RezeptMitZutaten[] = [];
+
+            await Promise.all(rezepte.map(async (rezept) => {
+                try {
+                    let fullRezept = await fetchFullRezeptCarousel(rezept.id);
+
+                    // **Workaround (sauberere Implementierung):**
+                    if (!fullRezept) {
+                        console.warn(`Rezept ${rezept.id}: fullRezept ist null/undefined. Rezept wird ignoriert.`);
+                        return; // Rezept überspringen, wenn kein fullRezept vorhanden ist
+                    }
+
+                    // Setze leere Arrays, falls sie fehlen (sehr unwahrscheinlich nach der vorherigen Prüfung, aber zur Sicherheit)
+                    fullRezept = {
+                        ...fullRezept,
+                        zutatMengeList: fullRezept.zutatMengeList ?? [],
+                        timerPositionList: fullRezept.timerPositionList ?? []
+                    };
+
+
+                    const isMatching = fullRezept.zutatMengeList.some(zutatMenge =>
+                        (zutatMenge.zutat?.name?.trim().toLowerCase() ?? "") === (zutatDerWoche?.name?.trim().toLowerCase() ?? "")
+                    );
+
+                    if (isMatching) {
+                      matchingRezepte.push(fullRezept);
+                      fetchRezeptByIdImage(rezept.id)
+                      .then((imageUrl) => {
+                          setImageUrls(imageUrl);
+                      })
+                      .catch((imageError) => console.error(`Fehler beim Laden des Bildes für Rezept ${rezept.id}:`, imageError));
+                    }
+                } catch (innerError) {
+                    console.error(`Fehler beim Laden von fullRezept für ${rezept.id}:`, innerError);
+                }
+            }));
+
+            setFilteredRezepte(matchingRezepte.length > 0 ? matchingRezepte : []);
+        } catch (err) {
+            setError('Fehler beim Laden der Rezepte.');
+            console.error("Fehler beim fetchen", err)
+        } finally {
+            setLoading(false);
+        }
     };
-  
+
     fetchAndFilterRezepte();
-  }, [rezepte, zutatDerWoche]);
-  
-  
-  
-  
+}, [rezepte, zutatDerWoche]);
 
-  if (loading) {
-    return (
-      <Box sx={{ textAlign: 'center', mt: 4 }}>
-        <CircularProgress />
-        <Typography variant="h6">Lade Rezepte...</Typography>
-      </Box>
-    );
-  }
+if (loading) {
+    return <CircularProgress />;
+}
 
-  if (error) {
-    return (
-      <Typography variant="h6" color="error" align="center">
-        {error}
-      </Typography>
-    );
-  }
+if (error) {
+    return <Typography color="error">{error}</Typography>;
+}
 
-  if (filteredRezepte.length === 0) {
-    return (
-      <Typography variant="h6" align="center">
-        Keine Rezepte mit der Zutat der Woche gefunden. <br />
-        Versuchen Sie es mit einer anderen Zutat.
-      </Typography>
-    );
-  }
+if (!filteredRezepte || filteredRezepte.length === 0) {
+    return <Typography>Keine Rezepte mit der Zutat der Woche gefunden.</Typography>;
+}
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>
-        Rezepte mit der Zutat der Woche: {zutatDerWoche.name}
-      </Typography>
-      {filteredRezepte.map((fullRezept) => (
-        <Box key={fullRezept.rezept.id} sx={{ mb: 2 }}>
-          <Typography variant="h6">{fullRezept.rezept.name}</Typography>
-          <Typography variant="body2">{fullRezept.rezept.anweisungen}</Typography>
-        </Box>
-      ))}
-    </Box>
+    <Carousel
+    showArrows={false} // Pfeile entfernen
+    showThumbs={false} // Thumbnails entfernen
+    showStatus={false} // Statusleiste (z. B. "1/5") entfernen
+    autoPlay={!isHovered} // Nur abspielen, wenn nicht gehovt
+    infiniteLoop
+    interval={3000} // Standardwiedergabeintervall (3 Sekunden)
+  >
+    {filteredRezepte.map((fullRezept) => (
+      <Box
+      key={fullRezept.rezept.id}
+      sx={{ display: 'flex', justifyContent: 'center', p: 2 }}
+      onMouseEnter={handleMouseEnter} // Hovern starten
+      onMouseLeave={handleMouseLeave} // Hovern beenden
+    >
+        <Card
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                  backgroundColor: 'white',
+                  overflow: 'hidden',
+                }}
+                onClick={() => handleClick(fullRezept.rezept.id)} // Klickhandler hinzufügen
+              >
+           <CardMedia
+            component="img"
+            height="200"
+            width='100px'
+            image={fullRezept.rezept.foto}
+            alt={fullRezept.rezept.name}
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h6" component="div">
+              {fullRezept.rezept.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {fullRezept.rezept.anweisungen}
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+    ))}
+  </Carousel>
+</Box>
+
   );
 };
 

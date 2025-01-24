@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { TextField, IconButton, Tooltip } from '@mui/material';
+import { TextField, IconButton, Tooltip, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import styles from '../Layout.module.css';
 import { Beef, Heart, Sprout, Vegan, Salad, WheatOff, MilkOff, Dessert, BicepsFlexed } from 'lucide-react';
 
-const Search: React.FC = () => {
-  const [query, setQuery] = useState('');
+interface SearchProps {
+  onSearchChange: (searchTerm: string) => void;
+}
+
+const Search: React.FC<SearchProps> = ({ onSearchChange }) => {
+  const [searchTerm, setSearchTerm] = useState('');
 
   const categories = [
     { name: 'Fleisch', icon: <Beef /> },
@@ -18,30 +23,55 @@ const Search: React.FC = () => {
     { name: 'Dessert', icon: <Dessert /> },
   ];
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+  // Handhabung der Eingabe in der Suchleiste
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+  };
+
+  // Behandlung des Suchformulars
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (searchTerm.trim()) {
+      onSearchChange(searchTerm.trim());
+    }
+  };
+
+  // Behandlung des Klicks auf Kategorien
+  const handleCategoryClick = (categoryName: string) => {
+    setSearchTerm(categoryName); // Setzt den Suchbegriff auf die Kategorie
+    onSearchChange(categoryName); // Benachrichtigt den Elternkomponenten
   };
 
   return (
     <div className={styles.searchContainer}>
-      {/* Suchfeld */}
-      <div className={styles.searchBar}>
-      <TextField
-  label="Search for categories..."
-  variant="outlined"
-  value={query}
-  onChange={handleSearchChange}
-  className="searchInput"
-  style={{ width: '100%', maxWidth: '400px', margin: '10px 0' }}
-/>
+      {/* Suchleiste */}
+      <form onSubmit={handleSearchSubmit} className={styles.searchBar}>
+        <TextField
+          label="Suche nach Rezepten..."
+          variant="outlined"
+          value={searchTerm}
+          onChange={handleInputChange}
+          className="searchInput"
+          style={{ width: '100%', maxWidth: '400px', margin: '10px 0' }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton type="submit">
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </form>
 
-      </div>
-
-      {/* Kategorien */}
+      {/* Kategorie-Buttons */}
       <div className={styles.categoriesContainer}>
         {categories.map((category, index) => (
           <Tooltip title={category.name} placement="top" key={index}>
             <IconButton
+              onClick={() => handleCategoryClick(category.name)}
               sx={{
                 width: 60,
                 height: 60,

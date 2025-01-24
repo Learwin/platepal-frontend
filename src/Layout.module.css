@@ -193,6 +193,25 @@ body, html {
   box-sizing: border-box;
 }
 
+.searchWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  margin: 20px auto;
+  position: relative;
+  max-width: 80%;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Layout.module.css */
+.hiddenContentWrapper {
+  display: none;
+}
+
 
 /* Cart-Container im Content-Bereich */
 /* Container für den Einkaufswagen */
@@ -271,3 +290,10 @@ body, html {
   }
 }
 
+.startseiteVisible {
+  display: block;
+}
+
+.startseiteHidden {
+  display: none;
+}

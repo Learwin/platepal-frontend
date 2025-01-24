@@ -1,0 +1,44 @@
+.container {
+ background-color: rgb(255, 255, 255);
+  padding: 16px;
+  max-width: 400px;
+
+}
+
+.tooltip {
+  background-color: #fff; /* Hintergrundfarbe */
+  color: #727272; /* Textfarbe */
+  border: none; /* Kein Rahmen */
+  box-shadow: none; /* Kein Schatten */
+  padding: 8px; /* Innenabstand */
+  border-radius: 4px; /* Optionale Abrundung */
+}
+
+.header {
+  text-align: center;
+  font-weight: bold;
+  color:#727272; /* Primary color */
+  margin-bottom: 16px;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.row:nth-child(even) {
+  background-color: #e7b84b98; /* Light grey */
+}
+
+.row:nth-child(odd) {
+  background-color: #E7B84B(255, 255, 255, 0.672);
+}
+
+.cell {
+  padding: 8px;
+  border-bottom: 1px solid #E7B84B(224, 224, 224, 0.791);
+}
+
+.label {
+  font-weight: bold;
+}
