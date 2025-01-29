@@ -99,11 +99,14 @@ const Anmeldung: React.FC = () => {
 </div>
                         </>
                     ) : (
+
+                    
                         <div className={styles.formActions}>
+                            Falsches Passwort oder deine E-Mail-Adresse ist nicht richtig.
                             <button 
                                 className={styles.submitButton} 
                                 onClick={() => navigate("/home")} // Button, der zur Startseite führt
-                            >
+                            >   
                                 Zur Startseite
                             </button>
                         </div>
