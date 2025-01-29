@@ -69,12 +69,12 @@
 
 .editZutatButton {
   border-color: #E7B84B !important;
-  color: #E7B84B;
+  color: #E7B84B !important;
 }
 
 .editZutatButton:hover {
   background-color: #E7B84B !important;
-  color: white;
+  color: white !important;
 }
 
 /* Delete Button */

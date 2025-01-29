@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Card, CardMedia, CardContent } from '@mui/material';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { fetchRezeptByIdImage } from '../services/api';
+import { fetchRezeptByIdImage, fetchRezeptByIdImageCarousel } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 interface User {
@@ -92,8 +92,6 @@ export const fetchFullRezeptCarousel = async (rezepteId: number): Promise<Rezept
   }
 };
 
-
-
 const RezeptCarousel: React.FC<RezeptCarouselProps> = ({ rezepte, zutatDerWoche }) => {
   const [filteredRezepte, setFilteredRezepte] = useState<RezeptMitZutaten[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -109,97 +107,94 @@ const RezeptCarousel: React.FC<RezeptCarouselProps> = ({ rezepte, zutatDerWoche 
     navigate(`/rezept/${rezeptId}`);
   };
 
-
   useEffect(() => {
     const fetchAndFilterRezepte = async () => {
-        if (!rezepte || rezepte.length === 0 || !zutatDerWoche) {
-            setLoading(false);
-            return;
-        }
+      if (!rezepte || rezepte.length === 0 || !zutatDerWoche) {
+        setLoading(false);
+        return;
+      }
 
-        setLoading(true);
-        try {
-            const matchingRezepte: RezeptMitZutaten[] = [];
+      setLoading(true);
+      try {
+        const matchingRezepte: RezeptMitZutaten[] = [];
 
-            await Promise.all(rezepte.map(async (rezept) => {
-                try {
-                    let fullRezept = await fetchFullRezeptCarousel(rezept.id);
+        await Promise.all(rezepte.map(async (rezept) => {
+          try {
+            let fullRezept = await fetchFullRezeptCarousel(rezept.id);
 
-                    // **Workaround (sauberere Implementierung):**
-                    if (!fullRezept) {
-                        console.warn(`Rezept ${rezept.id}: fullRezept ist null/undefined. Rezept wird ignoriert.`);
-                        return; // Rezept überspringen, wenn kein fullRezept vorhanden ist
-                    }
+            // **Workaround (sauberere Implementierung):**
+            if (!fullRezept) {
+              console.warn(`Rezept ${rezept.id}: fullRezept ist null/undefined. Rezept wird ignoriert.`);
+              return; // Rezept überspringen, wenn kein fullRezept vorhanden ist
+            }
 
-                    // Setze leere Arrays, falls sie fehlen (sehr unwahrscheinlich nach der vorherigen Prüfung, aber zur Sicherheit)
-                    fullRezept = {
-                        ...fullRezept,
-                        zutatMengeList: fullRezept.zutatMengeList ?? [],
-                        timerPositionList: fullRezept.timerPositionList ?? []
-                    };
+            const isMatching = fullRezept.zutatMengeList.some(zutatMenge =>
+              (zutatMenge.zutat?.name?.trim().toLowerCase() ?? "") === (zutatDerWoche?.name?.trim().toLowerCase() ?? "")
+            );
 
+            if (isMatching) {
+              matchingRezepte.push(fullRezept);
+              // Holen der Bild-URL nur einmal
+              const imageResponse = await fetchRezeptByIdImageCarousel(rezept.id);
+              if (imageResponse.imageUrl) {
+                setImageUrls(prevUrls => ({
+                  ...prevUrls,
+                  [rezept.id]: imageResponse.imageUrl
+                }));
+              }
+            }
+          } catch (innerError) {
+            console.error(`Fehler beim Laden von fullRezept für ${rezept.id}:`, innerError);
+          }
+        }));
 
-                    const isMatching = fullRezept.zutatMengeList.some(zutatMenge =>
-                        (zutatMenge.zutat?.name?.trim().toLowerCase() ?? "") === (zutatDerWoche?.name?.trim().toLowerCase() ?? "")
-                    );
-
-                    if (isMatching) {
-                      matchingRezepte.push(fullRezept);
-                      fetchRezeptByIdImage(rezept.id)
-                      .then((imageUrl) => {
-                          setImageUrls(imageUrl);
-                      })
-                      .catch((imageError) => console.error(`Fehler beim Laden des Bildes für Rezept ${rezept.id}:`, imageError));
-                    }
-                } catch (innerError) {
-                    console.error(`Fehler beim Laden von fullRezept für ${rezept.id}:`, innerError);
-                }
-            }));
-
-            setFilteredRezepte(matchingRezepte.length > 0 ? matchingRezepte : []);
-        } catch (err) {
-            setError('Fehler beim Laden der Rezepte.');
-            console.error("Fehler beim fetchen", err)
-        } finally {
-            setLoading(false);
-        }
+        setFilteredRezepte(matchingRezepte.length > 0 ? matchingRezepte : []);
+      } catch (err) {
+        setError('Fehler beim Laden der Rezepte.');
+        console.error("Fehler beim fetchen", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchAndFilterRezepte();
-}, [rezepte, zutatDerWoche]);
+  }, [rezepte, zutatDerWoche]);
 
-if (loading) {
+  if (loading) {
     return <CircularProgress />;
-}
+  }
 
-if (error) {
+  if (error) {
     return <Typography color="error">{error}</Typography>;
-}
+  }
 
-if (!filteredRezepte || filteredRezepte.length === 0) {
+  if (!filteredRezepte || filteredRezepte.length === 0) {
     return <Typography>Keine Rezepte mit der Zutat der Woche gefunden.</Typography>;
-}
+  }
 
   return (
     <Box>
-    <Carousel
-    showArrows={false} // Pfeile entfernen
-    showThumbs={false} // Thumbnails entfernen
-    showStatus={false} // Statusleiste (z. B. "1/5") entfernen
-    autoPlay={!isHovered} // Nur abspielen, wenn nicht gehovt
-    infiniteLoop
-    interval={3000} // Standardwiedergabeintervall (3 Sekunden)
-  >
-    {filteredRezepte.map((fullRezept) => (
-      <Box
-      key={fullRezept.rezept.id}
-      sx={{ display: 'flex', justifyContent: 'center', p: 2 }}
-      onMouseEnter={handleMouseEnter} // Hovern starten
-      onMouseLeave={handleMouseLeave} // Hovern beenden
-    >
-        <Card
+      <Carousel
+        showArrows={false} // Pfeile entfernen
+        showThumbs={false} // Thumbnails entfernen
+        showStatus={false} // Statusleiste (z. B. "1/5") entfernen
+        autoPlay={!isHovered} // Nur abspielen, wenn nicht gehovt
+        infiniteLoop
+        interval={2000} // Standardwiedergabeintervall (3 Sekunden)
+      >
+        {filteredRezepte.map((fullRezept) => {
+          const imageUrl = imageUrls[fullRezept.rezept.id] || 'fallback-image.jpg';
+          return (
+            <Box
+              key={fullRezept.rezept.id}
+              sx={{ display: 'flex', justifyContent: 'center', p: 2 }}
+              onMouseEnter={handleMouseEnter} // Hovern starten
+              onMouseLeave={handleMouseLeave} // Hovern beenden
+            >
+              <Card
                 sx={{
                   width: '100%',
+                  height: '65%',
                   display: 'flex',
                   flexDirection: 'column',
                   borderRadius: '8px',
@@ -209,24 +204,28 @@ if (!filteredRezepte || filteredRezepte.length === 0) {
                 }}
                 onClick={() => handleClick(fullRezept.rezept.id)} // Klickhandler hinzufügen
               >
-           <CardMedia
-            component="img"
-            height="200"
-            width='100px'
-            image={fullRezept.rezept.foto}
-            alt={fullRezept.rezept.name}
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h6" component="div">
-              {fullRezept.rezept.name}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Box>
-    ))}
-  </Carousel>
-</Box>
-
+                <CardMedia
+                  component="img"
+                  image={imageUrl} // fallback-image.jpg als Platzhalter
+                  style={{
+                    objectFit: 'cover',
+                    width: '100%',
+                    height: '300px', // Setze eine Höhe für das Bild
+                    borderTopLeftRadius: '8px',
+                    borderTopRightRadius: '8px',
+                  }}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h6" component="div">
+                    {fullRezept.rezept.name}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Box>
+          );
+        })}
+      </Carousel>
+    </Box>
   );
 };
 

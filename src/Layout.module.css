@@ -2,34 +2,31 @@
 body, html {
   overflow-x: hidden; /* Verhindert horizontales Scrollen */
   width: 100%;
-  height: 100%; /* Stellt sicher, dass der Körper die gesamte Höhe des Viewports einnimmt */
   margin: 0;
   padding: 0;
+  background-image: url('./assets/images/Hintergrund.png');
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Deckt den gesamten Viewport ab */
 }
 
 /* Hauptcontainer für das Layout */
 .layoutContainer {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100%; /* Höhe auf 100% des Viewports setzen */
   margin-bottom: 10px;
   position: relative;
   width: 100%; /* Verhindert horizontales Ausdehnen */
   overflow-x: hidden; /* Verhindert horizontalen Überlauf */
- overflow-y: auto; /* Ermöglicht vertikales Scrollen */
+  overflow-y: auto; /* Ermöglicht vertikales Scrollen */
+  min-height: 100vh; /* Gesamthöhe mindestens Viewport-Größe */
 }
 
-/* Hintergrundbild */
-.backgroundImage {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-}
+
+/* Hintergrundbild *
+
+
 
 /* Für größere Bildschirme (ab 1200px) */
 @media (min-width: 1200px) {
@@ -142,14 +139,7 @@ body, html {
     padding: 0; /* Kein zusätzliches Padding */
   }
 
-  /* ContentWrapper soll jetzt 100% der Bildschirmauflösung einnehmen */
-  .contentWrapper {
-    width: 100vw; /* Setzt die Breite auf 100% der Bildschirmauflösung */
-    max-width: 100vw; /* Verhindert, dass eine Breitenbegrenzung angewendet wird */
-    padding: 20px; /* Optional: Innenabstand */
-    margin: 0; /* Kein zusätzlicher Abstand */
-    box-sizing: border-box; /* Sorgt dafür, dass Padding die Breite nicht beeinflusst */
-  }
+ 
 
   /* Container für die Kategorien */
   .categoriesContainer {
@@ -186,11 +176,9 @@ body, html {
   justify-content: center;
   padding: 20px;
   margin: 20px auto;
-  position: relative;
-  max-width: 80%;
   width: 100%;
-  overflow: hidden;
   box-sizing: border-box;
+  flex-grow: 1;
 }
 
 .searchWrapper {
@@ -222,7 +210,7 @@ body, html {
   position: fixed;
   top: 0;
   right: 0;
-  width: 300px; /* Breite des Overlays */
+  width: 400px; /* Breite des Overlays */
   height: 100%;
   background-color: white;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
@@ -297,3 +285,766 @@ body, html {
 .startseiteHidden {
   display: none;
 }
+
+
+.footer {
+  background: #06b153 !important;
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 254px;
+  z-index: 100;
+  margin: 0;
+  position: relative; /* Normal position */
+  bottom: 0; /* Positioniere den Footer ganz unten */
+  left: 0;
+  right: 0;
+}
+
+
+
+
+.frame5 {
+  display: flex;
+  flex-direction: row;
+  gap: 62px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+.frame1 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 186px;
+  position: relative;
+}
+.unternehmen {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.17em;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.kontakt {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.agb {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.presse {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.jobs {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.impressum {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.datenschutz {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.datenschutzEinstellungen {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.frame2 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 186px;
+  position: relative;
+}
+.quickLinks {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.17em;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.zutatDerWoche {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.anmelden {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.registrieren {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.magazin {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.sponsoring {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.frame3 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 186px;
+  position: relative;
+}
+.newsletter {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.17em;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.zumNewsletterAnmelden {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.faq {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.frame4 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 186px;
+  position: relative;
+}
+.beliebteSuche {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.17em;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.muffinsVegen {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.suppen {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.dessert {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.plTzchen {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.mango {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-ExtraBold", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  position: relative;
+  align-self: stretch;
+}
+.sucheUndSlider {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 1437px;
+  position: absolute;
+  left: 0px;
+  top: 198px;
+}
+.rectangle2 {
+  border-radius: 0px;
+  flex-shrink: 0;
+  width: 517px;
+  height: 52px;
+  position: relative;
+  overflow: visible;
+}
+.frame8 {
+  padding: 0px 23px 0px 23px;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: stretch;
+  flex-shrink: 0;
+  height: 80px;
+  position: relative;
+  overflow-x: auto;
+}
+.frame7 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.ellipse1 {
+  background: #f7f7f7;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: #b9b9b9;
+  border-width: 1px;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.frame82 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame10 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame11 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame12 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame13 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame14 {
+  padding: 14px 17px 14px 17px;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.ellipse12 {
+  background: #f7f7f7;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: #b9b9b9;
+  border-width: 1px;
+  width: 73px;
+  height: 66px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.frame15 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame16 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame17 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame18 {
+  padding: 14px 17px 14px 17px;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame19 {
+  padding: 14px 17px 14px 17px;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame20 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame21 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame22 {
+  padding: 14px 17px 14px 17px;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame23 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame24 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame25 {
+  padding: 8px 11px 8px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: relative;
+}
+.frame26 {
+  padding: 0px 11px 0px 11px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  width: 73px;
+  height: 66px;
+  position: absolute;
+  left: 1695px;
+  top: 0px;
+}
+.zutatderWoche {
+  width: 1440px;
+  height: 725px;
+  position: absolute;
+  left: 0px;
+  top: 403px;
+  overflow: hidden;
+}
+.frame30 {
+  display: flex;
+  flex-direction: row;
+  gap: 127px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 1210px;
+  height: 584px;
+  position: absolute;
+  left: 115px;
+  top: 117px;
+}
+.group3 {
+  flex-shrink: 0;
+  width: 543px;
+  height: 600px;
+  position: static;
+}
+.rectangle9 {
+  background: #d9d9d9;
+  border-radius: 29px;
+  width: 543px;
+  height: 597.88px;
+  position: absolute;
+  left: 0px;
+  top: -8px;
+}
+.group2 {
+  width: 543px;
+  height: 600px;
+  position: absolute;
+  left: 0px;
+  top: -8px;
+  overflow: visible;
+}
+.group4 {
+  flex-shrink: 0;
+  width: 543px;
+  height: 600px;
+  position: static;
+}
+.rectangle92 {
+  background: #d9d9d9;
+  border-radius: 29px;
+  width: 543px;
+  height: 599.61px;
+  position: absolute;
+  left: 670px;
+  top: -8px;
+}
+.group22 {
+  width: 542.79px;
+  height: 600px;
+  position: absolute;
+  left: 670px;
+  top: -8px;
+  overflow: visible;
+}
+.frame32 {
+  background: #383d3b;
+  width: 1440px;
+  height: 65px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+.frame37 {
+  padding: 20px 96px 20px 96px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 282px;
+  height: 65px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  overflow: hidden;
+}
+.zutatDerWoche2 {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-Bold", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  position: relative;
+}
+.textVergangeneZutaten {
+  background: #383d3b;
+  width: 1440px;
+  height: 65px;
+  position: absolute;
+  left: 0px;
+  top: 1179px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+.frame372 {
+  padding: 20px 96px 20px 96px;
+  width: 764px;
+  height: 65px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  overflow: hidden;
+}
+.vergangeneZutatenDerWoche {
+  color: #ffffff;
+  text-align: left;
+  font-family: "Poppins-Bold", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  position: absolute;
+  left: 39px;
+  top: 14.5px;
+  width: 581px;
+}
+.boxVergangeneZutaten {
+  width: 1440px;
+  height: 459px;
+  position: absolute;
+  left: -3px;
+  top: 1246px;
+  overflow: hidden;
+}
+.group42 {
+  position: absolute;
+  inset: 0;
+}
+.rectangle93 {
+  background: #d9d9d9;
+  border-radius: 29px;
+  width: 413px;
+  height: 381.65px;
+  position: absolute;
+  left: 516px;
+  top: 39px;
+}
+.frame54 {
+  display: flex;
+  flex-direction: row;
+  gap: 43px;
+  align-items: center;
+  justify-content: flex-start;
+  position: absolute;
+  left: 60px;
+  top: 37px;
+}
+.group32 {
+  flex-shrink: 0;
+  width: 413px;
+  height: 383px;
+  position: static;
+}
+.rectangle94 {
+  background: #d9d9d9;
+  border-radius: 29px;
+  width: 413px;
+  height: 381.65px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+.group23 {
+  width: 413px;
+  height: 383px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  overflow: visible;
+}
+.group24 {
+  flex-shrink: 0;
+  width: 413px;
+  height: 383px;
+  position: relative;
+  overflow: visible;
+}
+.rectangle95 {
+  background: #d9d9d9;
+  border-radius: 29px;
+  width: 413px;
+  height: 381.65px;
+  position: absolute;
+  left: 912px;
+  top: 1px;
+}
+.group25 {
+  width: 413px;
+  height: 383px;
+  position: absolute;
+  left: 912px;
+  top: 0px;
+  overflow: visible;
+}
+
+
+
+/*searchrecipe und kategoryRezept brauchen noch die bilder.
+//beide seiten und rezeptdetails kann man nur durch login erreichen was dumm ist*/

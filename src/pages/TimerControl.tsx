@@ -61,6 +61,7 @@ const TimerControl: React.FC<TimerComponentProps> = ({ onTimerChange }) => {
             onChange={handleZeitChange}
             fullWidth
             style={{ marginBottom: 15 }}
+            className={styles.textField}
           />
 
           <TextField
@@ -71,6 +72,7 @@ const TimerControl: React.FC<TimerComponentProps> = ({ onTimerChange }) => {
             onChange={handlePositionChange}
             fullWidth
             style={{ marginBottom: 15 }}
+            className={styles.textField}
           />
 
           <Button

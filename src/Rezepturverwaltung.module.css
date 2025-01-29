@@ -62,6 +62,7 @@
     width: 100%; /* Anpassung an Container-Breite */
     max-width: 800px; /* Maximalbreite festlegen */
     margin-top: 20px;
+    background-color: #F1F1F1 !important;
 }
 
 /* Textfelder im Formular */
@@ -250,3 +251,4 @@
     margin-top: 20px;
 
   }
+

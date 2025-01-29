@@ -16,4 +16,7 @@
   .timerButton.running:hover {
     background-color: #ff9800 !important; /* Hover-Farbe wenn Timer läuft */
   }
+  .textfield{
+    background-color: #F1F1F1 !important;
+ } 
   

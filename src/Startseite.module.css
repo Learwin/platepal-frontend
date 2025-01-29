@@ -65,19 +65,26 @@
 
 /* Zutat Balken */
 .zutatBalken {
-  background-color: #383D3B !important;
-  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  background-color: #383d3b !important;
+  color: #ffffff;
   padding: 10px;
   margin-bottom: 20px;
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 50px; /* Feste Höhe, falls nötig */
 }
 
-.zutatBalken .MuiTypography-h5 {
-  font-family: 'Poppins-ExtraBold', sans-serif;
-  font-size: 18px;
-  text-align: center;
+
+@media (max-width: 600px) {
+  .zutatBalken {
+    padding: 5px;
+    font-size: 14px;
+    align-items: center;
+  }
 }
+
 
 .zutatContainer {
   flex: 1; /* Zutat der Woche bekommt gleichmäßig Platz */
@@ -97,3 +104,4 @@
   object-fit: contain; /* Das Bild wird skaliert, um vollständig in den Container zu passen, ohne verzerrt zu werden */
   justify-content: center;
 }
+

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Tab, Tabs, Box, TextField, Button, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import styles from '../Profil.module.css';
-import Zutatenverwaltung from './Zutatenverwaltung';
 import ZutatDerWoche from './ZutatDerWoche';
 import { useAuth } from '../context/AuthContextType';
 import { getUserImageById, User, uploadUserImage, putUser } from '../services/api';
 import Rezepturverwaltung from './Rezepturverwaltung';
+import Zutatenverwaltung from './Zutatenverwaltung';
 
 const Profil: React.FC = () => {
     const { user, isLoggedIn, setUser } = useAuth();

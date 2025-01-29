@@ -1,57 +1,61 @@
-/* Container für das gesamte Profil */
+/* ProfilContainer */
 .profilContainer {
-    display: flex; /* Flexbox-Layout aktivieren */
-    flex-direction: column; /* Elemente untereinander anordnen */
-    align-items: center; /* Inhalte zentrieren */
-    max-width: 800px; /* Feste maximale Breite */
-    padding: 20px; /* Innenabstand */
-    gap: 20px; /* Abstand zwischen den Elementen */
-    background-color: transparent; /* Optional: Hintergrundfarbe */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px; /* Festgelegte Breite */
+    padding: 20px;
+    gap: 20px;
+    background-color: transparent;
+    margin: 0 auto;
+    width: 100%; /* Keine Breitenänderung durch äußere Container */
 }
 
 /* Tabs */
 .tabs {
-    background-color: #383D3B !important; /* Hintergrundfarbe für die Tabs */
-    border-radius: 4px; /* Optionale Abrundung */
-    padding: 8px; /* Abstand um die Tabs */
+    background-color: #383D3B !important;
+    border-radius: 4px;
+    padding: 8px;
     margin-bottom: 20px;
-    display: flex;
-    justify-content: space-around; /* Gleiche Verteilung der Tab-Elemente */
-    box-sizing: border-box; /* Padding in Breite einberechnen */
+    display: inline-flex;
+    justify-content: space-around;
+    box-sizing: border-box;
+    width: 100%; /* Tabs nehmen die volle Breite ein */
+    max-width: 800px; /* Maximale Breite der Tabs */
+    overflow: hidden; /* Verhindert, dass Tabs die Breite überschreiten */
 }
 
+/* Tab */
 .tab {
-    color: white !important; /* Standardfarbe für Labels */
+    color: white !important;
     font-weight: bold;
-    text-align: left; /* Linksbündige Ausrichtung */
-    transition: background-color 0.3s ease; /* Weicher Übergang */
-}
-
-.tab:hover {
-    background-color: #e7b84b !important; /* Hover-Farbe */
-    color: black; /* Textfarbe beim Hover */
+    text-align: left;
+    transition: background-color 0.3s ease;
+    padding: 10px 20px; /* Gleiche Größe für alle Tabs */
+    width: auto; /* Automatische Breite für Tabs */
 }
 
 /* Aktiver Tab */
 .Mui-selected {
-    background-color: #e7b84b !important; /* Hintergrund für aktiven Tab */
-    color: black !important; /* Textfarbe für aktiven Tab */
+    background-color: #e7b84b !important;
+    color: black !important;
 }
 
 /* Tab-Inhalt */
 .tabContent {
-    min-height: 600px; /* Mindesthöhe für stabilen Container */
-    display: flex; /* Flexbox-Layout aktivieren */
-    flex-direction: column; /* Inhalte untereinander anordnen */
-    align-items: center; /* Inhalte zentrieren */
-    justify-content: flex-start; /* Inhalte oben ausrichten */
-    padding: 20px; /* Innenabstand um die Inhalte */
-    border-radius: 8px; /* Abrundung der Ecken */
-    box-sizing: border-box; /* Padding in Breite und Höhe einbeziehen */
-    overflow: hidden; /* Verhindere Überschreitungen */
-    gap: 100px; /* Abstand zwischen den Elementen */
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    gap: 100px;
+    width: 100%;
+    max-width: 800px; /* Maximale Breite für den Inhalt */
 }
-
 
 /* Profil-Inhalt */
 .profilContent {
@@ -60,8 +64,11 @@
     gap: 20px;
     align-items: center;
     width: 100%;
-    max-width: 400px; /* Inhalt begrenzen */
+    max-width: 400px;
 }
+
+
+
 
 /* Eingabefelder */
 .textField {
@@ -69,15 +76,6 @@
     max-width: 400px; /* Feste Breite */
     margin-bottom: 15px;
     background-color: #F1F1F1 !important;
-}
-
-
-/* Profil-Inhalt */
-.profilContent {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
 }
 
 /* Bild-Sektion */

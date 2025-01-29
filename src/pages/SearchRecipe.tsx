@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Grid, Card, CardMedia, CardContent, Typography, Box } from '@mui/material';
 import { Flame, Star, User } from 'lucide-react';
-import { fetchRezepteByName } from '../services/api';
+import { fetchRezeptByIdImageCarousel, fetchRezepteByName } from '../services/api';
 import styles from '../SearchRecipe.module.css';
 
 interface Rezept {
@@ -20,6 +20,7 @@ const SearchRecipe: React.FC = () => {
   const { searchTerm } = useParams(); // Hole den searchTerm aus der URL
   const [searchResults, setSearchResults] = useState<Rezept[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({}); // Bild-URLs speichern
   const navigate = useNavigate();
 
   // Rezepte anhand des Suchbegriffs abrufen
@@ -28,8 +29,29 @@ const SearchRecipe: React.FC = () => {
       if (searchTerm && searchTerm.trim()) {
         setIsLoading(true);
         try {
-          const data = await fetchRezepteByName(searchTerm); // Verwende den Suchbegriff
+          const data = await fetchRezepteByName(searchTerm.trim());
           setSearchResults(data);
+
+          // Bild-URLs für die gefundenen Rezepte abrufen
+          const images = await Promise.all(
+            data.map(async (rezept) => {
+              try {
+                const imageResponse = await fetchRezeptByIdImageCarousel(rezept.id);
+                return { id: rezept.id, url: imageResponse.imageUrl || './placeholder.png' };
+              } catch (error) {
+                console.error(`Fehler beim Laden des Bildes für Rezept ${rezept.id}:`, error);
+                return { id: rezept.id, url: './placeholder.png' }; // Fallback-Bild
+              }
+            })
+          );
+
+          // Bild-URLs im State speichern
+          const imageMap = images.reduce((acc, { id, url }) => {
+            acc[id] = url;
+            return acc;
+          }, {} as { [key: number]: string });
+
+          setImageUrls(imageMap);
         } catch (error) {
           console.error('Fehler beim Abrufen der Suchergebnisse:', error);
           setSearchResults([]);
@@ -37,18 +59,19 @@ const SearchRecipe: React.FC = () => {
           setIsLoading(false);
         }
       } else {
-        setSearchResults(null); // Leere Ergebnisse bei leerem Suchbegriff
+        setSearchResults(null);
       }
     };
 
     fetchResults();
-  }, [searchTerm]); // Aktualisiere Ergebnisse bei Änderungen des Suchbegriffs
+  }, [searchTerm]);
 
   // Keine Ergebnisse anzeigen, wenn kein Suchbegriff eingegeben wurde
   if (!searchTerm || !searchTerm.trim()) {
     return null;
   }
 
+  // Rezept-Seite bei Klick auf ein Rezept öffnen
   const handleClick = (rezeptId: number) => {
     navigate(`/rezept/${rezeptId}`);
   };
@@ -73,17 +96,18 @@ const SearchRecipe: React.FC = () => {
                     padding: 4,
                     borderRadius: 4,
                     boxShadow: 3,
-                    height: '100%',
+                    height: '70%',
                     display: 'flex',
                     flexDirection: 'column',
+                    gap: '20px'
                   }}
-                  onClick={() => handleClick(rezept.id)} // Klickhandler hinzufügen
+                  onClick={() => handleClick(rezept.id)}
                 >
                   <CardMedia
                     component="img"
                     alt={rezept.name}
                     height="150"
-                    image={rezept.foto || '/placeholder-image.jpg'}
+                    image={imageUrls[rezept.id] || './placeholder.png'} // Individuelle Bild-URL
                     sx={{ objectFit: 'cover' }}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>

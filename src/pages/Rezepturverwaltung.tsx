@@ -39,7 +39,20 @@ const Rezeptverwaltung = () => {
   const [addedChips, setAddedChips] = useState<{ id: number, name: string }[]>([]);
   const [completeZutaten, setCompleteZutaten] = useState<PostZutatenModel[]>([]); // Neuer State für vollständige Zutaten
   const [isZutatFormIsVisible, setIsZutatFormVisible] = useState<boolean>(false);
-  
+  const [editingRecipeId, setEditingRecipeId] = useState<number | null>(null); // ID des Rezepts, das bearbeitet wird
+  const [editingRecipe, setEditingRecipe] = useState<PostRezeptModel>({
+    name: '',
+    anweisungen: '',
+    zeit: 0,
+    schwierigkeit: 0,
+    defaultPortionen: 0,
+    flag: 0,
+    user_Id: 0,
+    timer: [],
+    durchschnittlicheBewertung: 0,
+    zutaten: [
+
+    ],});
 
   // Verwende den AuthContext, um den eingeloggten Benutzer abzurufen
 
@@ -109,20 +122,17 @@ const Rezeptverwaltung = () => {
 
 // Funktion zum Setzen von newRecipe beim Bearbeiten
 const loadRecipeForEdit = async (id: number) => {
-    try {
-        const fullRecipe = await fetchFullRezept(id);
-        console.log("fullRecipe nach fetchFullRezept:", fullRecipe); // HIER!
-        if (fullRecipe) {
-            setNewRecipe(fullRecipe);
-            setCompleteZutaten(fullRecipe.zutaten)
-            setIsFormVisible(true);
-            console.log("newRecipe nach setnewRecipe", newRecipe)
-        } else {
-            console.error('Rezept mit der angegebenen ID wurde nicht gefunden:', id);
-        }
-    } catch (error) {
-        console.error('Fehler beim Laden des Rezepts:', error);
-    }
+  try {
+      const recipe = await fetchFullRezept(id);
+      if (recipe) {
+          setNewRecipe(recipe);
+          setCompleteZutaten(recipe.zutaten);
+          setEditingRecipeId(id); // Setze die ID des bearbeiteten Rezepts
+          setIsFormVisible(true);
+      }
+  } catch (error) {
+      console.error('Fehler beim Laden des Rezepts:', error);
+  }
 };
 
 useEffect(() => {
@@ -213,34 +223,43 @@ const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextA
   
   const handleZutatAsChip = (index: number) => {
     const zutat = newRecipe.zutaten[index];
-
+  
     if (zutat.menge > 0 && zutat.einheit && zutat.einheit.id > 0) {
       const foundZutat = zutaten.find(z => z.id === zutat.id);
       const zutatName = foundZutat ? foundZutat.name : 'Unbekannte Zutat';
+  
       const newChip = {
-          id: zutat.einheit.id,
-          name: `Zutat: ${zutatName}`,
+        id: zutat.einheit.id,
+        name: `Zutat: ${zutatName}`,
       };
+  
       setAddedChips((prevChips) => {
-          if (prevChips.some(chip => chip.id === newChip.id)) {
-              return prevChips;
-          } else {
-              return [...prevChips, newChip];
-          }
+        // Überprüfen, ob der Chip mit der gleichen ID und dem gleichen Namen schon vorhanden ist
+        if (prevChips.some(chip => chip.id === newChip.id && chip.name === newChip.name)) {
+          return prevChips; // Wenn schon vorhanden, keine Änderung
+        } else {
+          return [...prevChips, newChip]; // Andernfalls neuen Chip hinzufügen
+        }
       });
-        setCompleteZutaten(prevZutaten => {
-            const zutatExistiertBereits = prevZutaten.some(prevZutat => prevZutat.id === zutat.id && prevZutat.menge === zutat.menge && prevZutat.einheit.id === zutat.einheit.id)
-            if (zutatExistiertBereits) {
-                return prevZutaten
-            } else {
-                return [...prevZutaten, zutat]
-            }
-        })
+  
+      setCompleteZutaten(prevZutaten => {
+        const zutatExistiertBereits = prevZutaten.some(
+          prevZutat => 
+            prevZutat.id === zutat.id &&
+            prevZutat.menge === zutat.menge &&
+            prevZutat.einheit.id === zutat.einheit.id
+        );
+        
+        if (zutatExistiertBereits) {
+          return prevZutaten; // Zutat existiert schon, keine Änderung
+        } else {
+          return [...prevZutaten, zutat]; // Zutat hinzufügen
+        }
+      });
     }
-};
+  };
   
   
-
   
   const handleChipClick = (chipId: number) => {
   const selectedChip = addedChips.find((chip) => chip.id === chipId);
@@ -265,9 +284,6 @@ const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextA
 };
   
   
-  
-  
-  
   const handleDeleteChip = (chipId: number) => {
     setAddedChips((prevChips) => prevChips.filter((chip) => chip.id !== chipId));
   };
@@ -275,12 +291,15 @@ const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextA
   
   const handleZutatAdd = () => {
     setIsZutatFormVisible(true);
-    setNewRecipe((prevRecipe) => ({
-      ...prevRecipe,
-      zutaten: [...prevRecipe.zutaten, { id: 0, menge: 0, einheit: { id: 0 } }],
-    }));
+    setNewRecipe((prevRecipe) => {
+      const zutaten = Array.isArray(prevRecipe.zutaten) ? prevRecipe.zutaten : [];
+      return {
+        ...prevRecipe,
+        zutaten: [...zutaten, { id: 0, menge: 0, einheit: { id: 0 } }],
+      };
+    });
   };
-
+  
   const handleSaveRecipe = async () => {
     
     if (!user) return;
@@ -303,11 +322,10 @@ const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextA
       
       console.log('Rezept erfolgreich gespeichert:', newRecipeData);
   
-      // Sicherstellen, dass die zurückgegebenen Daten die Zutaten und User enthalten
       console.log('Gespeichertes Rezept (mit Zutaten und User):', newRecipeData);
 
-      const updatedRecipes = await fetchRezepte(); // Deine Methode, um alle Rezepte zu laden
-      setRecipes(updatedRecipes);
+      const saverecipe = await fetchRezepte(); // Das neue Rezept in die Liste setzen
+      setRecipes(saverecipe);
 
       setAlertMessage('Rezept erfolgreich gespeichert!');
       setOpenSnackbar(true);
@@ -317,13 +335,6 @@ const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextA
     }
   };
   
-  
-
-  const handleRemoveZutat = (index: number) => {
-    const updatedZutaten = [...newRecipe.zutaten];
-    updatedZutaten.splice(index, 1);
-    setNewRecipe({ ...newRecipe, zutaten: updatedZutaten });
-  };
 
   const handleDelete = async (id: number) => {
     if (!user) {
@@ -351,9 +362,6 @@ const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextA
     loadRecipeForEdit(id); // Diese Funktion aufrufen!
 };
 
-  
-  
-  
   
 
 
@@ -431,6 +439,7 @@ return (
           onChange={(e) => handleInputChange(e, 'name')}
           fullWidth
           style={{ marginBottom: 15 }}
+          className={styles.textField}
         />
         <TextField
           label="Anweisungen"
@@ -441,38 +450,44 @@ return (
           multiline
           rows={4}
           style={{ marginBottom: 15 }}
+          className={styles.textField}
         />
         <TextField
           label="Zeit (Minuten)"
           variant="outlined"
           type="number"
-          value={newRecipe.zeit || 0}
+          value={newRecipe.zeit}
           onChange={(e) => handleInputChange(e, 'zeit')}
           fullWidth
           style={{ marginBottom: 15 }}
+          className={styles.textField}
         />
         <TextField
           label="Schwierigkeit (1-5)"
           variant="outlined"
           type="number"
-          value={newRecipe.schwierigkeit || 0}
+          value={newRecipe.schwierigkeit}
           onChange={(e) => handleInputChange(e, 'schwierigkeit')}
           fullWidth
           style={{ marginBottom: 15 }}
+          className={styles.textField}
         />
         <TextField
           label="Portionen"
           variant="outlined"
           type="number"
-          value={newRecipe.defaultPortionen || 0}
+          value={newRecipe.defaultPortionen}
           onChange={(e) => handleInputChange(e, 'defaultPortionen')}
           fullWidth
           style={{ marginBottom: 15 }}
+          className={styles.textField}
         />
 
         
         <div className={styles.rezeptContainer}>
       <h3>Zutaten</h3>
+      
+      
       {Array.isArray(newRecipe.zutaten) &&
         newRecipe.zutaten.map((zutat, index) => (
           <div key={index}>
@@ -481,8 +496,10 @@ return (
                 <InputLabel>Zutat</InputLabel>
                 <Select
                   value={zutat.id}
+                  className={styles.textField}
                   onChange={(e) => handleZutatSelectChange(index, e, 'id')}
                   disabled={addedChips.some((chip) => chip.id === zutat.id)}
+                  
                 >
                   {zutaten.map((zutatOption) => (
                     <MenuItem key={zutatOption.id} value={zutatOption.id}>
@@ -506,6 +523,7 @@ return (
                 <InputLabel>Einheit</InputLabel>
                 <Select
                    value={zutat.einheit ? zutat.einheit.id : ''} // Korrektur: Direkter Zugriff auf zutat.einheit.id
+                   className={styles.textField}
                     onChange={(e) => handleEinheitSelectChange(index, e, 'einheit')}
 >
                   {einheiten.map((einheitOption) => (

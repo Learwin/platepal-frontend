@@ -51,9 +51,49 @@
   max-width: 100%;
 }
 
+.rezeptBalken {
+  background-color: #383D3B !important;
+  color: #FFFFFF;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  justify-content: end;
+  width: 100%;
+}
+
+.rezeptBalken .MuiTypography-h4 {
+  font-family: 'Poppins-ExtraBold', sans-serif;
+  font-size: 18px;
+  text-align: center;
+}
+
 
 @media (max-width: 600px) {
   .MuiCard-root {
     width: 100%; /* Stellt sicher, dass die Card auf kleinen Geräten den vollen Platz einnimmt */
   }
 }
+
+.timerButton {
+  background-color: #06b153 !important; /* Grüner Hintergrund */
+  color: white; /* Weiße Schrift */
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.timerButton:hover {
+    background-color: #06b153 !important; /* Etwas dunkleres Grün beim Hover */
+}
+
+.bewertungButton {
+  margin-top: 20px;
+  margin-bottom: 5px;
+  background-color: #E7B84B !important;
+  color: #f9f9f9 !important;
+}
+

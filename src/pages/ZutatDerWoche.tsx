@@ -47,6 +47,26 @@ const postZutatDerWoche = async (zutatDerWoche: ZutatDerWocheData): Promise<Zuta
   }
 };
 
+const deleteZutatDerWoche = async (zutatDerWocheId: number): Promise<void> => {
+  try {
+    const response = await fetch(`${API_URL}/zutatderwoche/${zutatDerWocheId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Fehler beim Löschen der Zutat der Woche: ${response.statusText}`);
+    }
+
+    console.log(`Zutat der Woche mit ID ${zutatDerWocheId} erfolgreich gelöscht.`);
+  } catch (error) {
+    console.error('Fehler beim Löschen der Zutat der Woche:', error);
+    throw error;
+  }
+};
+
 const ZutatDerWoche: React.FC = () => {
   const [zutaten, setZutaten] = useState<Zutat[]>([]);
   const [selectedZutat, setSelectedZutat] = useState<number | string>('');
@@ -125,6 +145,16 @@ const ZutatDerWoche: React.FC = () => {
     }
   };
 
+  const handleDelete = async (zutatDerWocheId: number) => {
+    try {
+      await deleteZutatDerWoche(zutatDerWocheId);
+      console.log(`Zutat der Woche mit ID ${zutatDerWocheId} wurde erfolgreich gelöscht.`);
+    } catch (error) {
+      console.error(`Fehler beim Löschen der Zutat der Woche mit ID ${zutatDerWocheId}:`, error);
+    }
+  };
+  
+
   /* Hole das Bild für die Zutat der Woche
   const fetchZutatImage = async (id: number): Promise<string> => {
     console.log(`Fetching image for Zutat with ID: ${id}`);
@@ -173,6 +203,8 @@ const ZutatDerWoche: React.FC = () => {
             value={selectedZutat}
             onChange={handleZutatChange}
             label="Zutat auswählen"
+            fullWidth
+            style={{ marginBottom: 10 }}
           >
             {zutaten.map((zutat) => (
               <MenuItem key={zutat.id} value={zutat.id}>
@@ -189,9 +221,7 @@ const ZutatDerWoche: React.FC = () => {
             value={fromDate}
             onChange={handleFromDateChange}
             fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
+            style={{ marginBottom: 10 }}
           />
         </Box>
         <Box style={{ marginBottom: '20px' }}>
@@ -201,19 +231,24 @@ const ZutatDerWoche: React.FC = () => {
             value={toDate}
             onChange={handleToDateChange}
             fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
+            style={{ marginBottom: 10 }}
           />
         </Box>
 
         <Button
-          variant="contained"
           color="primary"
+          className={styles.saveButton}
           onClick={handleSave}
           disabled={!selectedZutat || !fromDate || !toDate}
         >
           Speichern
+        </Button>
+
+        <Button
+          className={styles.deleteButton}
+          onClick={() => handleDelete(zutatDerWoche?.id ?? 0)}
+        > 
+          Löschen
         </Button>
       </Box>
     </div>

@@ -185,13 +185,10 @@ interface ZutatDerWoche {
   };
 
 
-
-
-
-  export const fetchRezeptByIdImageCarousel= async (id: number): Promise<{ imageUrl: string }> => {
-    console.log(`Fetching image for Rezept with ID: ${id}`);
+  export const fetchRezeptByIdImageCarousel = async (id: number): Promise<{ imageUrl: string }> => {
     try {
       const response = await fetch(`${API_URL}/rezepte/image/${id}`, {
+        
         method: 'GET',
         headers: {
           'Accept': 'application/octet-stream',
@@ -201,21 +198,40 @@ interface ZutatDerWoche {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      console.log(`API-URL: ${API_URL}/rezepte/image/${id}`);
   
-      // Erstelle einen Blob aus der Antwort
-      const blob = await response.blob();
+      // Hole den Content-Type vom Server (falls verfügbar)
+      const contentType = response.headers.get('Content-Type') || '';
+      let mimeType = 'image/jpeg'; // Standard-MIME-Typ
   
-      // Erstelle eine temporäre URL für den Blob
-      const imageUrl = URL.createObjectURL(blob);
+      // Überprüfe, ob der Content-Type den Bildtyp enthält
+      if (contentType.includes('image/png')) {
+        mimeType = 'image/png';
+      } else if (contentType.includes('image/jpg')) {
+        mimeType = 'image/jpg'; // JPG wird als JPEG behandelt
+      } else if (contentType.includes('image/jpeg')) {
+        mimeType = 'image/jpeg'; // JPG wird als JPEG behandelt
+      }
   
-      return { imageUrl };
+      // Konvertiere den Bitstrom in einen Base64-String
+      const arrayBuffer = await response.arrayBuffer();
+      const base64String = btoa(
+        new Uint8Array(arrayBuffer)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
+  
+      return {
+        imageUrl: `data:${mimeType};base64,${base64String}`,
+      };
     } catch (error) {
-      console.error('Fehler beim Abrufen des Rezept-Bildes:', error);
+      console.error('Fehler beim Abrufen des Zutat-Bildes:', error);
       throw error;
     }
   };
   
-
+  
+  
 
 
   export const fetchRezeptByIdImage = async (id: number): Promise<{ imageUrl: string }> => {
@@ -257,6 +273,7 @@ interface ZutatDerWoche {
       throw error;
     }
   };
+  
   
   
   export const fetchZutatDerWoche = async (): Promise<ZutatDerWoche> => {

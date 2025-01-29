@@ -72,22 +72,15 @@ const Zutat: React.FC = () => {
         maxWidth: '350px',
         margin: '0 auto',
         position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f9f9f9',
-        borderRadius: '8px',
       }}
     >
       <Card
         sx={{
-          width: '100%',
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
           borderRadius: '8px',
           boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-          backgroundColor: 'white',
-          overflow: 'hidden',
         }}
       >
         {imageUrl && (
@@ -98,40 +91,34 @@ const Zutat: React.FC = () => {
             style={{
               objectFit: 'cover',
               width: '100%',
-              height: '200px',
+              height: '280px', // Setze eine Höhe für das Bild
               borderTopLeftRadius: '8px',
               borderTopRightRadius: '8px',
             }}
           />
         )}
-        <CardContent sx={{ textAlign: 'center', padding: '16px' }}>
-          <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
+        <CardContent>
+          <Typography variant="h5" component="div" align="center">
             {zutatDerWoche.name}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          <Typography variant="body2" color="text.secondary" align="center">
             Verfügbar vom {zutatDerWoche.von} bis {zutatDerWoche.bis}
           </Typography>
         </CardContent>
       </Card>
-  
+
       {/* Tooltip mit Nährwerten */}
       <Tooltip
         title={<NaehrwerteTabelle zutat={zutat} />}
         arrow
-        placement="top"
       >
         <IconButton
           sx={{
             position: 'absolute',
-            top: 12,
-            right: 12,
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            top: 8,
+            right: 8,
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
             zIndex: 10,
-            borderRadius: '50%',
-            padding: '8px',
-            '&:hover': {
-              backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            },
           }}
         >
           <InfoIcon />
@@ -139,5 +126,6 @@ const Zutat: React.FC = () => {
       </Tooltip>
     </div>
   );
-}
-export default Zutat;  
+};
+
+export default Zutat;

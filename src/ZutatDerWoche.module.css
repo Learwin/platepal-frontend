@@ -1,7 +1,10 @@
 .container {
-  padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%; /* Anpassung an Container-Breite */
+  max-width: 800px; /* Maximalbreite festlegen */
+  margin-top: 20px;
 }
 
 .card {
@@ -27,3 +30,28 @@
 .cardButton {
   margin-top: 16px;
 }
+
+.saveButton {
+  background-color: #4caf50 !important; /* Grüner Hintergrund */
+  color: white; /* Weiße Schrift */
+
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.saveButton:hover {
+    background-color: #45a049 !important; /* Etwas dunkleres Grün beim Hover */
+}
+
+.deleteButton {
+  border-color: #FF7033 !important;
+  color: #FF7033 !important;
+}
+
+.deleteButton:hover {
+  background-color: #FF7033 !important;
+  color: white !important;
+}
+

@@ -3,7 +3,13 @@ import { Box, IconButton, Typography, Button, Divider, Tooltip, Badge } from '@m
 import { CircleMinus, CirclePlus, CircleX, ShoppingCart } from 'lucide-react'; // Icons
 import { useCart } from '../context/CartContext'; // Zugriff auf CartContext
 import styles from '../Layout.module.css';
-
+interface Zutat {
+  id: number;
+  name: string;
+  quantity: number; // Die Anzahl der Artikel im Warenkorb
+  einheit: string;
+  menge: number; // Die Grundmenge der Zutat
+}
 const Cart: React.FC<{ isCartOpen: boolean; setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>; }> = ({ isCartOpen, setIsCartOpen }) => {
   const { cartItems, addItemToCart, decreaseItemQuantity, clearCart } = useCart();
 
@@ -35,25 +41,39 @@ const Cart: React.FC<{ isCartOpen: boolean; setIsCartOpen: React.Dispatch<React.
         </Box>
         <Box>
           {cartItems.length > 0 ? (
-            cartItems.map((item, index) => (
-              <Box key={item.id} className={styles.cartItem}>
-                <Typography>Geben Sie nur Stückzahlen an.</Typography>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Typography>{item.name}</Typography>
-                  <Typography>{item.quantity}</Typography>
-                  <Box className={styles.quantityControls} display="flex" alignItems="center">
-                    <IconButton onClick={() => decreaseItemQuantity(item.id)} aria-label="Menge verringern">
-                      <CircleMinus size={16} />
-                    </IconButton>
-                    <Typography>{item.quantity}</Typography>
-                    <IconButton onClick={() => addItemToCart(item)} aria-label="Menge erhöhen">
-                      <CirclePlus size={16} />
-                    </IconButton>
-                  </Box>
-                </Box>
-                {index < cartItems.length - 1 && <Divider />}
-              </Box>
-            ))
+            <>
+              {/* Nachricht wird einmalig angezeigt */}
+              <Typography>Geben Sie nur Stückzahlen an.</Typography>
+  
+              {/* Schleife für Einkaufswagenartikel */}
+              {cartItems.map((item: Zutat, index: number)  => (
+                <Box key={item.id} className={styles.cartItem}>
+  <Box display="flex" alignItems="center" justifyContent="space-between">
+    <Typography>{item.name}</Typography>
+    <Typography>
+      {item.menge * item.quantity} {item.einheit} {/* Berechnung der Menge */}
+    </Typography>
+    <Box className={styles.quantityControls} display="flex" alignItems="center">
+      <IconButton
+        onClick={() => decreaseItemQuantity(item.id)}
+        aria-label="Menge verringern"
+      >
+        <CircleMinus size={16} />
+      </IconButton>
+      <Typography>{item.quantity}</Typography>
+      <IconButton
+        onClick={() => addItemToCart(item)}
+        aria-label="Menge erhöhen"
+      >
+        <CirclePlus size={16} />
+      </IconButton>
+    </Box>
+  </Box>
+  {index < cartItems.length - 1 && <Divider />}
+</Box>
+
+              ))}
+            </>
           ) : (
             <Typography>Der Einkaufswagen ist leer.</Typography>
           )}
@@ -93,6 +113,7 @@ const Cart: React.FC<{ isCartOpen: boolean; setIsCartOpen: React.Dispatch<React.
       </Box>
     </Box>
   );
+  
 };
 
 export default Cart;

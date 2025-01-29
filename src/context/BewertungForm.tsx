@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Snackbar, Alert } from '@mui/material';
 import { postBewertung } from '../services/api';
 import { Star } from 'lucide-react';
+import styles from '../RezeptDetails.module.css';
 
 interface BewertungFormProps {
   rezeptId: number;
@@ -52,7 +53,7 @@ const BewertungForm: React.FC<BewertungFormProps> = ({ rezeptId, userId }) => {
           />
         ))}
       </Box>
-      <Button onClick={handleSubmitBewertung} variant="contained" sx={{ marginTop: 2 }}>
+      <Button onClick={handleSubmitBewertung} className={styles.bewertungButton} >
         Bewertung absenden
       </Button>
 

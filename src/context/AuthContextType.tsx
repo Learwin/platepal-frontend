@@ -25,19 +25,24 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null); // Zustand für den Benutzer
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); // Zustand für den Login-Status
+    const [isAdmin, setIsAdmin] = useState<boolean>(false); // Zustand für den Login-Status
 
     // Benutzer beim Setzen von setUser behandeln
     const handleSetUser = (user: User | null) => {
         if (user) {
-            setIsLoggedIn(true); // Wenn ein Benutzer gesetzt wird, ist er eingeloggt
-            if (user.id === 14) {
-                user.flag = 1; // Beispiel: Admin-Flag setzen, wenn die ID 14 ist
+            setIsLoggedIn(true);
+            if (user.flag === 1) {
+                setIsAdmin(true); // Setze Admin-Status
+            } else {
+                setIsAdmin(false); // Normaler Benutzer
             }
         } else {
-            setIsLoggedIn(false); // Wenn der Benutzer null ist, ist er abgemeldet
+            setIsLoggedIn(false);
+            setIsAdmin(false); // Abgemeldet = kein Admin
         }
         setUser(user);
     };
+    
 
     return (
         <AuthContext.Provider value={{ user, setUser: handleSetUser, isLoggedIn, setIsLoggedIn }}>

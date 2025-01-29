@@ -3,6 +3,7 @@ import { TextField, IconButton, Tooltip, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import styles from '../Layout.module.css';
 import { Beef, Heart, Sprout, Vegan, Salad, WheatOff, MilkOff, Dessert, BicepsFlexed } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface SearchProps {
   onSearchChange: (searchTerm: string) => void;
@@ -10,6 +11,7 @@ interface SearchProps {
 
 const Search: React.FC<SearchProps> = ({ onSearchChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   const categories = [
     { name: 'Fleisch', icon: <Beef /> },
@@ -39,8 +41,7 @@ const Search: React.FC<SearchProps> = ({ onSearchChange }) => {
 
   // Behandlung des Klicks auf Kategorien
   const handleCategoryClick = (categoryName: string) => {
-    setSearchTerm(categoryName); // Setzt den Suchbegriff auf die Kategorie
-    onSearchChange(categoryName); // Benachrichtigt den Elternkomponenten
+    navigate(`/kategorie/${categoryName}`);
   };
 
   return (
@@ -68,27 +69,31 @@ const Search: React.FC<SearchProps> = ({ onSearchChange }) => {
 
       {/* Kategorie-Buttons */}
       <div className={styles.categoriesContainer}>
-        {categories.map((category, index) => (
-          <Tooltip title={category.name} placement="top" key={index}>
-            <IconButton
-              onClick={() => handleCategoryClick(category.name)}
-              sx={{
-                width: 60,
-                height: 60,
-                borderRadius: '50%',
-                backgroundColor: '#E7B84B',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                '&:hover': { backgroundColor: '#D9A63F' },
-              }}
-            >
-              {category.icon}
-            </IconButton>
-          </Tooltip>
-        ))}
-      </div>
+  {categories.map((category) => (
+    <div key={category.name}>
+      <Tooltip title={category.name} placement="top">
+        <IconButton
+          onClick={() => handleCategoryClick(category.name)}
+          sx={{
+            width: 60,
+            height: 60,
+            borderRadius: '50%',
+            backgroundColor: '#E7B84B',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            '&:hover': { backgroundColor: '#D9A63F' },
+          }}
+        >
+          {category.icon}
+        </IconButton>
+      </Tooltip>
     </div>
+  ))}
+</div>
+
+    </div>
+    
   );
 };
 

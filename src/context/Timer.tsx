@@ -44,6 +44,7 @@ const Timer: React.FC<TimerProps> = ({ initialTime }) => {
         className={`${styles.timerButton} ${isRunning ? styles.running : ''}`} // Dynamische Klassen, je nach Timer-Status
         variant="contained"
         onClick={handleStartPause}
+        
       >
         <Microwave size={20} style={{ marginRight: 8 }} />
         {isRunning ? 'Pause' : 'Kochzeit'}: {formattedTime}

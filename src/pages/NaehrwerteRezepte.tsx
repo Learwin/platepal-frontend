@@ -42,8 +42,8 @@ const NaehrwerteTabelle: React.FC<NaehrwerteTabelleProps> = ({ naehrwerte, name,
                 </TableCell>
               </Tooltip>
               <TableCell className={styles.cell}>
-                {typeof value === 'number' ? value : `${value} g`}
-              </TableCell>
+  {typeof value === 'number' ? (value).toFixed(2) : `${parseFloat(value).toFixed(2)} g`}
+</TableCell>
             </TableRow>
           ))}
         </TableBody>
