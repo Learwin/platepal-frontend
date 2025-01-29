@@ -224,7 +224,7 @@ const RezeptDetails: React.FC = () => {
                 component="img"
                 alt={fullRezept.rezept.name}
                 height="200"
-                image={imageUrl || fullRezept.rezept.foto || '/placeholder-image.jpg'}
+                image={imageUrl || fullRezept.rezept.foto || '/bild.png'}
                 className={styles.cardImage}
               />
               {naehrwerte && (

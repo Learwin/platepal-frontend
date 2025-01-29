@@ -37,10 +37,10 @@ const SearchRecipe: React.FC = () => {
             data.map(async (rezept) => {
               try {
                 const imageResponse = await fetchRezeptByIdImageCarousel(rezept.id);
-                return { id: rezept.id, url: imageResponse.imageUrl || './placeholder.png' };
+                return { id: rezept.id, url: imageResponse.imageUrl || './bild.png' };
               } catch (error) {
                 console.error(`Fehler beim Laden des Bildes für Rezept ${rezept.id}:`, error);
-                return { id: rezept.id, url: './placeholder.png' }; // Fallback-Bild
+                return { id: rezept.id, url: './bild.png' }; // Fallback-Bild
               }
             })
           );
@@ -107,7 +107,7 @@ const SearchRecipe: React.FC = () => {
                     component="img"
                     alt={rezept.name}
                     height="150"
-                    image={imageUrls[rezept.id] || './placeholder.png'} // Individuelle Bild-URL
+                    image={imageUrls[rezept.id] || './bild.png'} // Individuelle Bild-URL
                     sx={{ objectFit: 'cover' }}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>

@@ -7,12 +7,13 @@ import { useAuth } from '../context/AuthContextType';
 import { getUserImageById, User, uploadUserImage, putUser } from '../services/api';
 import Rezepturverwaltung from './Rezepturverwaltung';
 import Zutatenverwaltung from './Zutatenverwaltung';
+import defaultImage from '../assets/images/bild.png';
 
 const Profil: React.FC = () => {
     const { user, isLoggedIn, setUser } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<number>(0);
-    const [profileImage, setProfileImage] = useState<string>('https://via.placeholder.com/150');
+    const [profileImage, setProfileImage] = useState<string>(defaultImage);
     const [username, setUsername] = useState<string>(user?.username || '');
     const [emailAdresse, setEmail] = useState<string>(user?.emailAdresse || '');
     const [passwort, setPassword] = useState<string>(user?.passwort || '');
@@ -142,14 +143,14 @@ const Profil: React.FC = () => {
                     {activeTab === 0 && (
                         <div className={styles.profilContent}>
                             <div className={styles.imageSection}>
-                                <img src={profileImage} alt="Profilbild" className={styles.profileImage} />
+                                <img src={profileImage || defaultImage} alt="Profilbild" className={styles.profileImage} />
                                 <Button variant="contained" component="label" className={styles.uploadButton}>
                                     Bild hochladen
                                     <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
                                 </Button>
                             </div>
                             <TextField
-                                label="Benutzername"
+                                label="Benutzername"    
                                 variant="outlined"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}

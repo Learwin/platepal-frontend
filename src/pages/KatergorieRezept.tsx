@@ -4,6 +4,7 @@ import { Container, Grid, Card, CardMedia, CardContent, Typography, Box } from '
 import { Flame, Star, User } from 'lucide-react';
 import styles from '../KategorieRezept.module.css';
 import { fetchRezeptByIdImageCarousel } from '../services/api';
+import defaultImage from '../assets/images/bild.png';
 
 interface Einheit {
   id: number;
@@ -95,6 +96,7 @@ const KategorieRezepte: React.FC = () => {
   const [selectedAllergen, setSelectedAllergen] = useState<string | null>(null); // Zustand für ausgewähltes Allergen
 
 
+
   useEffect(() => {
     const fetchCategoryRezepte = async () => {
       setLoading(true);
@@ -183,7 +185,7 @@ const KategorieRezepte: React.FC = () => {
                     component="img"
                     alt={rezept.name}
                     height="150"
-                    image={imageUrls[rezept.id] || '/placeholder-image.jpg'}
+                    image={imageUrls[rezept.id] || defaultImage}
                     sx={{ objectFit: 'cover' }}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
