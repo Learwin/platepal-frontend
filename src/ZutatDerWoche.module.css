@@ -32,8 +32,8 @@
 }
 
 .saveButton {
-  background-color: #4caf50 !important; /* Grüner Hintergrund */
-  color: white; /* Weiße Schrift */
+  background-color: #06b153 !important; /* Grüner Hintergrund */
+  color: white !important; /* Weiße Schrift */
 
   text-align: center;
   cursor: pointer;
@@ -42,7 +42,7 @@
 }
 
 .saveButton:hover {
-    background-color: #45a049 !important; /* Etwas dunkleres Grün beim Hover */
+    background-color: #06b153 !important; /* Etwas dunkleres Grün beim Hover */
 }
 
 .deleteButton {

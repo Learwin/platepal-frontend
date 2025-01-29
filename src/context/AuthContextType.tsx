@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Interface für den Benutzer
-interface User {
+export interface User {
     id: number;
     username: string;
     foto: string; // Base64-String oder URL
@@ -16,6 +16,7 @@ interface AuthContextType {
     setUser: (user: User | null) => void;
     isLoggedIn: boolean;
     setIsLoggedIn: (status: boolean) => void;
+    isAdmin: boolean; // Füge isAdmin hier hinzu
 }
 
 // Erstellen des AuthContext
@@ -25,27 +26,18 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null); // Zustand für den Benutzer
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); // Zustand für den Login-Status
-    const [isAdmin, setIsAdmin] = useState<boolean>(false); // Zustand für den Login-Status
 
     // Benutzer beim Setzen von setUser behandeln
     const handleSetUser = (user: User | null) => {
-        if (user) {
-            setIsLoggedIn(true);
-            if (user.flag === 1) {
-                setIsAdmin(true); // Setze Admin-Status
-            } else {
-                setIsAdmin(false); // Normaler Benutzer
-            }
-        } else {
-            setIsLoggedIn(false);
-            setIsAdmin(false); // Abgemeldet = kein Admin
-        }
         setUser(user);
+        setIsLoggedIn(!!user);
     };
-    
+
+    // Berechne isAdmin basierend auf dem flag-Wert
+    const isAdmin = user?.flag === 1;
 
     return (
-        <AuthContext.Provider value={{ user, setUser: handleSetUser, isLoggedIn, setIsLoggedIn }}>
+        <AuthContext.Provider value={{ user, setUser: handleSetUser, isLoggedIn, setIsLoggedIn, isAdmin }}>
             {children}
         </AuthContext.Provider>
     );

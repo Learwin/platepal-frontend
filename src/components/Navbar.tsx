@@ -7,12 +7,15 @@ import { useCheckedContext } from '../context/CheckedContext';
 import { useAuth } from '../context/AuthContextType'; // AuthContext importieren
 import styles from "../Startseite.module.css";
 import Cart from '../pages/Cart';
+import { useCart } from '../context/CartContext';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn, user, setUser } = useAuth(); // Zustand aus dem AuthContext verwenden
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { checkedCount } = useCheckedContext();
+  const { cartItems } = useCart();
+
 
   // State für das Menu (ob es geöffnet oder geschlossen ist)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -76,7 +79,7 @@ const Navbar: React.FC = () => {
             <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
               {isLoggedIn && (
                 <IconButton onClick={handleCartClick} sx={{ color: 'inherit', marginRight: 2 }}>
-                  <Badge badgeContent={checkedCount} color="error">
+                  <Badge badgeContent={cartItems.length} color="error">
                     <ShoppingCart />
                   </Badge>
                 </IconButton>

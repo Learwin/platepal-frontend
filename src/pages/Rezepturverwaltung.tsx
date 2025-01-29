@@ -39,6 +39,9 @@ const Rezeptverwaltung = () => {
   const [addedChips, setAddedChips] = useState<{ id: number, name: string }[]>([]);
   const [completeZutaten, setCompleteZutaten] = useState<PostZutatenModel[]>([]); // Neuer State für vollständige Zutaten
   const [isZutatFormIsVisible, setIsZutatFormVisible] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false); // Zustand für den Lade-Status
+  const [error, setError] = useState<string>(''); // Zustand für Fehler
+
   const [editingRecipeId, setEditingRecipeId] = useState<number | null>(null); // ID des Rezepts, das bearbeitet wird
   const [editingRecipe, setEditingRecipe] = useState<PostRezeptModel>({
     name: '',
@@ -59,18 +62,27 @@ const Rezeptverwaltung = () => {
   const { user } = useAuth();
   
 
-  useEffect(() => {
-    const loadRecipes = async () => {
-      try {
-        if (!user) return;
-        const fetchedRecipes = await fetchRezepte();
-        // Nur Rezepte des angemeldeten Benutzers laden
-        const userRecipes = fetchedRecipes.filter((recipe) => recipe.user_Id.id === user.id);
-        setRecipes(userRecipes);
-      } catch (error) {
-        console.error('Fehler beim Laden der Rezepte:', error);
-      }
-    };
+    useEffect(() => {
+      const loadRecipes = async () => {
+        if (!user) return; // Wenn kein Benutzer angemeldet, nichts tun
+  
+        setLoading(true);
+        setError('');
+        try {
+          // Rezepte von der API holen
+          const fetchedRecipes = await fetchRezepte(); 
+  
+          // Nur Rezepte des angemeldeten Benutzers filtern
+          const userRecipes = fetchedRecipes.filter((recipe: any) => recipe.user_Id.id === user.id);
+          setRecipes(userRecipes); // Rezepte im Zustand speichern
+        } catch (error) {
+          console.error('Fehler beim Laden der Rezepte:', error);
+          setError('Fehler beim Laden der Rezepte.');
+        } finally {
+          setLoading(false);
+        }
+      };
+
 
     const loadEinheiten = async () => {
       try {
@@ -92,28 +104,39 @@ const Rezeptverwaltung = () => {
     };
 
     const fetchUserRecipes = async () => {
+      if (!user) return; // Falls kein User angemeldet ist, nichts tun
+  
       try {
-        const userRecipes = await fetchRezepte(); // API-Aufruf zum Laden der Rezepte des Benutzers
-        console.log("Rezepte geladen:", userRecipes);
-    
-        // Lade die Bilder für alle Rezepte
-        const recipesWithImages = await Promise.all(
-          userRecipes.map(async (recipe) => {
-            try {
-              const { imageUrl } = await fetchRezeptByIdImage(recipe.id);
-              return { ...recipe, foto: imageUrl };
-            } catch (error) {
-              console.error(`Fehler beim Laden des Bildes für Rezept ${recipe.id}:`, error);
-              return recipe; // Rückgabe des Rezepts ohne Bild
-            }
-          })
-        );
-    
-        setRecipes(recipesWithImages);
+          const allRecipes = await fetchRezepte(); // Alle Rezepte abrufen
+          console.log("Alle geladenen Rezepte:", allRecipes);
+  
+          // Wenn user.flag === 1, dann alle Rezepte anzeigen, sonst nur eigene
+          const userRecipes = user.flag === 1 
+              ? allRecipes 
+              : allRecipes.filter((recipe: any) => recipe.user_Id.id === user.id);
+  
+          console.log("Angezeigte Rezepte:", userRecipes);
+  
+          // Lade die Bilder für alle angezeigten Rezepte
+          const recipesWithImages = await Promise.all(
+              userRecipes.map(async (recipe) => {
+                  try {
+                      const { imageUrl } = await fetchRezeptByIdImage(recipe.id);
+                      return { ...recipe, foto: imageUrl };
+                  } catch (error) {
+                      console.error(`Fehler beim Laden des Bildes für Rezept ${recipe.id}:`, error);
+                      return recipe; // Rezept ohne Bild zurückgeben
+                  }
+              })
+          );
+  
+          setRecipes(recipesWithImages);
       } catch (error) {
-        console.error("Fehler beim Laden der Benutzerrezepte:", error);
+          console.error("Fehler beim Laden der Benutzerrezepte:", error);
       }
-    };
+  };
+  
+
     loadRecipes();
     loadEinheiten();
     loadZutaten();

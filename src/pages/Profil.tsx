@@ -19,18 +19,26 @@ const Profil: React.FC = () => {
     const [alertMessage, setAlertMessage] = useState<string>('');
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
+    // Zustand für flag definieren
+    const [flag, setFlag] = useState<number>(user?.flag || 0); // Setze den Standardwert auf 0, falls kein Wert vorhanden ist
+
+    const isAdmin = flag === 1; // Überprüfe, ob der Benutzer ein Admin ist (flag === 1)
+
+    // Navigiert den Benutzer zur Login-Seite, wenn er nicht eingeloggt ist
     useEffect(() => {
         if (!isLoggedIn) {
             navigate('/login');
         }
     }, [isLoggedIn, navigate]);
 
+    // Holt das Profilbild des Benutzers nach dem Laden der Benutzerdaten
     useEffect(() => {
         if (user) {
             const fetchUserData = async () => {
                 try {
                     const { imageUrl } = await getUserImageById(user.id);
                     setProfileImage(imageUrl); // Bild als URL setzen
+                    setFlag(user.flag || 0);  // Flag aus den Benutzerdaten setzen, Standardwert 0
                 } catch (error) {
                     console.error('Fehler beim Abrufen des Profils:', error);
                 }
@@ -38,10 +46,6 @@ const Profil: React.FC = () => {
             fetchUserData();
         }
     }, [user]);
-
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setActiveTab(newValue);
-    };
 
     const handleSave = async () => {
         if (!user || user.id === 0) {
@@ -56,6 +60,7 @@ const Profil: React.FC = () => {
                 username: username.trim(),
                 emailAdresse: emailAdresse.trim(),
                 passwort: passwort.trim(),
+                flag: flag,  // Setze den flag-Wert hier als number
             };
 
             const updatedUserFromServer = await putUser(updatedUser);
@@ -77,6 +82,7 @@ const Profil: React.FC = () => {
         }
     };
 
+    // Verarbeitet das Hochladen eines neuen Profilbildes
     const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) {
@@ -112,21 +118,25 @@ const Profil: React.FC = () => {
         }
     };
 
-    const isAdmin = user?.flag === 1; // Überprüfe, ob der Benutzer ein Admin ist (flag === 1)
+    // Funktion zum Wechseln des aktiven Tabs
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setActiveTab(newValue);
+    };
 
     return (
         <div className={styles.profilContainer}>
             <Box>
-            <Tabs 
-    value={activeTab} 
-    onChange={handleChange} 
-    centered 
-    className={styles.tabs}>
-    <Tab label="Profil" className={styles.tab} />
-    <Tab label="Rezepturverwaltung" className={styles.tab} />
-    {isAdmin && <Tab label="Zutatenverwaltung" className={styles.tab} />}
-    {isAdmin && <Tab label="Zutat der Woche" className={styles.tab} />}
-</Tabs>
+                <Tabs
+                    value={activeTab}
+                    onChange={handleChange}
+                    centered
+                    className={styles.tabs}
+                >
+                    <Tab label="Profil" className={styles.tab} />
+                    <Tab label="Rezepturverwaltung" className={styles.tab} />
+                    {isAdmin && <Tab label="Zutatenverwaltung" className={styles.tab} />}
+                    {isAdmin && <Tab label="Zutat der Woche" className={styles.tab} />}
+                </Tabs>
 
                 <Box className={styles.tabContent}>
                     {activeTab === 0 && (
@@ -189,6 +199,3 @@ const Profil: React.FC = () => {
 };
 
 export default Profil;
-
-
-//Profil vom registrierten nutzer daten holen

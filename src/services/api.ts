@@ -316,7 +316,7 @@ export interface User {
   passwort: string;
   emailAdresse: string;
   foto: string
-  //flag?: number
+  flag?: number
 }
 
 export interface Recipe {
@@ -713,6 +713,7 @@ export const getUserByEmail = async (emailAdresse: string): Promise<User | null>
           passwort: userData.passwort,
           id: userData.id,
           foto: isValidImage ? userImage : 'default.jpg', // Fallback auf Standardbild
+          flag: userData.flag ?? 0
         }
       : null;
   } catch (error) {

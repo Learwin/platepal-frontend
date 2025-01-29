@@ -169,37 +169,36 @@ const RezeptDetails: React.FC = () => {
   }, [rezeptId]);
   
 
-    const handleCheckboxChange = (
-      zutatId: number, 
-      zutatName: string,
-      menge: number, 
-      einheitName: string, 
-    ) => {
-      setCheckedZutaten((prev) => {
-        const newChecked = new Set(prev);
-    
-        if (newChecked.has(zutatId)) {
-          // Zutat abwählen und aus dem Warenkorb entfernen
-          newChecked.delete(zutatId);
-          removeItemFromCart(zutatId); // Entferne die Zutat aus dem Warenkorb
-        } else {
-          // Zutat auswählen und mit der tatsächlichen Menge hinzufügen
-          newChecked.add(zutatId);
-          addItemToCart({
-            id: zutatId,
-            name: zutatName,
-            menge: menge,
-            quantity: 1,
-            einheit: einheitName,
-          });
-        }
-    
-        setCheckedCount(newChecked.size); // Anzahl der ausgewählten Zutaten aktualisieren
-        return newChecked;
-      });
-    };
-    
-    console.log(fullRezept?.rezept.durchschnittlicheBewertung);
+  const handleCheckboxChange = (
+    zutatId: number, 
+    zutatName: string,
+    menge: number, 
+    einheitName: string
+  ) => {
+    setCheckedZutaten((prev) => {
+      const newChecked = new Set(prev);
+      
+      if (newChecked.has(zutatId)) {
+        // Zutat abwählen und aus dem Warenkorb entfernen
+        newChecked.delete(zutatId);
+        removeItemFromCart(zutatId); // Entferne die Zutat aus dem Warenkorb
+      } else {
+        // Zutat auswählen und mit der tatsächlichen Menge hinzufügen
+        newChecked.add(zutatId);
+        addItemToCart({
+          id: zutatId,
+          name: zutatName,
+          menge: menge,
+          quantity: 1,
+          einheit: einheitName,
+        });
+      }
+      
+      setCheckedCount(newChecked.size); // Anzahl der ausgewählten Zutaten aktualisieren
+      return newChecked;
+    });
+  };
+  
     
     
 

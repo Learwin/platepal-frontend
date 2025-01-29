@@ -11,14 +11,18 @@ const Anmeldung: React.FC = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const { setIsLoggedIn, setUser } = useAuth(); // Zugriff auf den AuthContext
+    const [isAdmin, setIsAdmin] = useState<boolean>(false); // Zustand für den Login-Status
+    
     const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-
+    
         try {
             const user = await getUserByEmail(mail); // Benutzer aus der API abrufen
-
+            
+            console.log(user); // Überprüfe die Struktur der Antwort
+    
             if (user) {
                 if (user.passwort === password) { // Passwort überprüfen
                     const validUser = {
@@ -27,26 +31,23 @@ const Anmeldung: React.FC = () => {
                         passwort: user.passwort,
                         id: user.id,
                         foto: user.foto || 'default.jpg',
-                        // Setze das flag auf 1, wenn der Benutzer ID 14 hat
-                        flag: user.id === 14 ? 1 : 0,
+                        flag: user.flag, // Hier den flag-Wert setzen
                     };
-
-                    console.log("Anmeldung erfolgreich");
-                    setUser(validUser); // Benutzer im AuthContext setzen
-                    setIsLoggedIn(true); // Anmelden im AuthContext
-                    setError(''); // Fehler zurücksetzen
-                    navigate("/home"); // Nach erfolgreichem Login zur Startseite navigieren
+                    setUser(validUser);
+                    setIsLoggedIn(true);
+                    navigate('/');
                 } else {
-                    setError('Das Passwort ist falsch.');
+                    setError('Falsches Passwort');
                 }
             } else {
-                setError('Benutzer nicht gefunden.');
+                setError('Benutzer nicht gefunden');
             }
         } catch (error) {
-            console.error('Ein Fehler ist aufgetreten:', error);
-            setError('Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+            console.error('Fehler beim Abrufen des Benutzers:', error);
+            setError('Fehler bei der Anmeldung');
         }
     };
+    
 
     return (
         <div className={styles.anmeldeContainer}>

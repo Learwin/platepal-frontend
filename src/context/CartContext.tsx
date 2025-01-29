@@ -30,6 +30,7 @@ interface CartProviderProps {
 
 export const CartProvider = ({ children }: CartProviderProps) => {
   const [cartItems, setCartItems] = useState<Zutat[]>([]);
+  const [checkedZutaten, setCheckedZutaten] = useState<Set<number>>(new Set());
 
   // Funktion zum Hinzufügen oder Erhöhen der Menge einer Zutat
   const addItemToCart = (item: Zutat) => {
@@ -70,6 +71,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
 
   const clearCart = () => {
     setCartItems([]); // Leert den Warenkorb
+    setCheckedZutaten(new Set()); // Setzt alle ausgewählten Zutaten zurück
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, MenuItem, Select, TextField, InputLabel, FormControl, SelectChangeEvent} from '@mui/material';
+import { Box, Button, MenuItem, Select, TextField, InputLabel, FormControl, SelectChangeEvent, Snackbar, Alert } from '@mui/material';
 import styles from '../ZutatDerWoche.module.css';
 
 interface Zutat {
@@ -57,7 +57,8 @@ const deleteZutatDerWoche = async (zutatDerWocheId: number): Promise<void> => {
     });
 
     if (!response.ok) {
-      throw new Error(`Fehler beim Löschen der Zutat der Woche: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`Fehler beim Löschen der Zutat der Woche: ${response.statusText}. Response: ${errorText}`);
     }
 
     console.log(`Zutat der Woche mit ID ${zutatDerWocheId} erfolgreich gelöscht.`);
@@ -67,12 +68,15 @@ const deleteZutatDerWoche = async (zutatDerWocheId: number): Promise<void> => {
   }
 };
 
+
 const ZutatDerWoche: React.FC = () => {
   const [zutaten, setZutaten] = useState<Zutat[]>([]);
   const [selectedZutat, setSelectedZutat] = useState<number | string>('');
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
   const [zutatDerWoche, setZutatDerWoche] = useState<Zutat | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
     const fetchZutaten = async () => {
@@ -109,8 +113,6 @@ const ZutatDerWoche: React.FC = () => {
   const handleZutatChange = (event: SelectChangeEvent<string | number>) => {
     const selectedId = event.target.value;
     setSelectedZutat(selectedId);
-
-    
   };
 
   const handleFromDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,6 +142,7 @@ const ZutatDerWoche: React.FC = () => {
       const savedData = await postZutatDerWoche(payload);
       console.log('Zutat der Woche erfolgreich gespeichert:', savedData);
       setZutatDerWoche(savedData.zutat); // Aktualisiere die Zutat der Woche
+      setSnackbarOpen(true); // Snackbar öffnen
     } catch (error) {
       console.error('Fehler beim Speichern der Zutat der Woche:', error);
     }
@@ -149,50 +152,25 @@ const ZutatDerWoche: React.FC = () => {
     try {
       await deleteZutatDerWoche(zutatDerWocheId);
       console.log(`Zutat der Woche mit ID ${zutatDerWocheId} wurde erfolgreich gelöscht.`);
+      
+      // Zutat der Woche zurücksetzen
+      setZutatDerWoche(null); // Wenn keine Zutat der Woche mehr gesetzt werden soll
+  
+      // Snackbar mit erfolgreicher Nachricht anzeigen
+      setSnackbarMessage('Zutat der Woche erfolgreich gelöscht!');
+      setSnackbarOpen(true);
     } catch (error) {
       console.error(`Fehler beim Löschen der Zutat der Woche mit ID ${zutatDerWocheId}:`, error);
+      setSnackbarMessage('Fehler beim Löschen der Zutat der Woche.');
+      setSnackbarOpen(true);
     }
   };
   
+  
 
-  /* Hole das Bild für die Zutat der Woche
-  const fetchZutatImage = async (id: number): Promise<string> => {
-    console.log(`Fetching image for Zutat with ID: ${id}`);
-    try {
-      const response = await fetch(`${API_URL}/zutat/image/${id}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/octet-stream', // Erwartet Binärdaten (Bild)
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Hole den Content-Type vom Server (falls verfügbar)
-      const contentType = response.headers.get('Content-Type') || '';
-      let mimeType = 'image/jpeg'; // Standard-MIME-Typ
-
-      if (contentType.includes('image/png')) {
-        mimeType = 'image/png';
-      } else if (contentType.includes('image/jpg')) {
-        mimeType = 'image/jpeg';
-      }
-
-      // Konvertiere den Bitstrom in einen Base64-String
-      const arrayBuffer = await response.arrayBuffer();
-      const base64String = btoa(
-        new Uint8Array(arrayBuffer)
-          .reduce((data, byte) => data + String.fromCharCode(byte), '')
-      );
-
-      return `data:${mimeType};base64,${base64String}`;
-    } catch (error) {
-      console.error('Fehler beim Abrufen des Zutat-Bildes:', error);
-      throw error;
-    }
-  };*/
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   return (
     <div className={styles.container}>
@@ -250,6 +228,17 @@ const ZutatDerWoche: React.FC = () => {
         > 
           Löschen
         </Button>
+
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={3000}
+          onClose={handleSnackbarClose}
+        >
+          <Alert onClose={handleSnackbarClose} severity="success">
+            Zutat der Woche erfolgreich gespeichert!
+          </Alert>
+        </Snackbar>
+
       </Box>
     </div>
   );

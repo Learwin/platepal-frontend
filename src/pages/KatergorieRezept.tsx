@@ -92,6 +92,8 @@ const KategorieRezepte: React.FC = () => {
   const [error, setError] = useState<string>('');
   const navigate = useNavigate();
   const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({}); // Bild-URLs speichern
+  const [selectedAllergen, setSelectedAllergen] = useState<string | null>(null); // Zustand für ausgewähltes Allergen
+
 
   useEffect(() => {
     const fetchCategoryRezepte = async () => {
@@ -100,11 +102,18 @@ const KategorieRezepte: React.FC = () => {
       try {
         const allRezepte = await fetchRezepte();
         const filteredRezepte = allRezepte.filter((rezept) => {
+          const matchesAllergen = selectedAllergen
+            ? rezept.zutatMengeList?.some((zutatMenge) =>
+                zutatMenge.zutat?.allergene.includes(selectedAllergen)
+              )
+            : true; // Wenn kein Allergen ausgewählt ist, dann wird nicht gefiltert
+
           const matchesCategory = rezept.zutatMengeList?.some((zutatMenge) =>
             zutatMenge.zutat?.name.toLowerCase().includes(categoryName?.toLowerCase() || '')
           );
           const matchesRezeptName = rezept.name.toLowerCase().includes(categoryName?.toLowerCase() || '');
-          return matchesCategory || matchesRezeptName;
+
+          return (matchesCategory || matchesRezeptName) && matchesAllergen;
         });
 
         // Bilder für jedes Rezept abrufen
@@ -142,7 +151,7 @@ const KategorieRezepte: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ padding: '24px 0' }}>
-      <Typography variant="h4" gutterBottom className={styles.categoryTitle}>
+      <Typography variant="h4" gutterBottom className={styles.zutatBalken}>
         Rezepte für Kategorie: "{categoryName}"
       </Typography>
 
@@ -164,7 +173,7 @@ const KategorieRezepte: React.FC = () => {
                     padding: 4,
                     borderRadius: 4,
                     boxShadow: 3,
-                    height: '70%',
+                    height: '80%',
                     display: 'flex',
                     flexDirection: 'column',
                   }}
@@ -182,29 +191,40 @@ const KategorieRezepte: React.FC = () => {
                       {rezept.name}
                     </Typography>
                     <Box display="flex" alignItems="center" marginBottom={2}>
-                      <Typography variant="body1" marginRight={2}>
-                        Schwierigkeit:
-                      </Typography>
-                      {[...Array(rezept.schwierigkeit)].map((_, index) => (
-                        <Flame key={`schwierigkeit-${index}`} size={16} style={{ marginRight: 4 }} />
-                      ))}
+                                    <Typography variant="body1" marginRight={2}>Schwierigkeit:</Typography>
+                                    {rezept.schwierigkeit && rezept.schwierigkeit > 5 ? (
+                                      <><Flame size={24} />x
+                                        <Typography variant="body1" marginRight={2}>{rezept.schwierigkeit}</Typography>
+                                        
+                                      </>
+                                    ) : (
+                                      [...Array(rezept.schwierigkeit || 0)].map((_, index) => (
+                                        <Flame key={`schwierigkeit-${index}`} size={24} style={{ marginRight: 4 }} />
+                                      ))
+                                    )}
+                                  </Box>
+                                  {/* Portionen */}
+                                  <Box display="flex" alignItems="center" marginBottom={2}>
+                      <Typography variant="body1" marginRight={2}>Portionen:</Typography>
+                      {rezept.defaultPortionen && rezept.defaultPortionen > 5 ? (
+                        <>
+                          <User size={24} />
+                          <Typography variant="body1" marginLeft={1}>{rezept.defaultPortionen}</Typography>
+                        </>
+                      ) : (
+                        [...Array(rezept.defaultPortionen || 0)].map((_, index) => (
+                          <User key={`portionen-${index}`} size={24} style={{ marginRight: 4 }} />
+                        ))
+                      )}
                     </Box>
                     <Box display="flex" alignItems="center" marginBottom={2}>
-                      <Typography variant="body1" marginRight={2}>
-                        Portionen:
-                      </Typography>
-                      {[...Array(rezept.defaultPortionen)].map((_, index) => (
-                        <User key={`portionen-${index}`} size={16} style={{ marginRight: 4 }} />
-                      ))}
-                    </Box>
-                    <Box display="flex" alignItems="center" marginBottom={2}>
-                      <Typography variant="body1" marginRight={2}>
-                        Bewertungen:
-                      </Typography>
-                      {[...Array(rezept.durchschnittlicheBewertung)].map((_, index) => (
-                        <Star key={`bewertungen-${index}`} size={16} style={{ marginRight: 4 }} />
-                      ))}
-                    </Box>
+                                          <Typography variant="body1" marginRight={2}>
+                                            Bewertungen:
+                                          </Typography>
+                                          {[...Array(rezept.durchschnittlicheBewertung)].map((_, index) => (
+                                            <Star key={`bewertungen-${index}`} size={16} style={{ marginRight: 4 }} />
+                                          ))}
+                                        </Box>
                   </CardContent>
                 </Card>
               </Grid>

@@ -43,6 +43,7 @@
 }
 
 .formActions {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -71,12 +72,13 @@
 }
 
 .registerLink {
+    color: #06B153 !important;
     text-align: center;
     margin-top: 15px;
 }
 
 .registerButton {
-    color: #06B153;
+    color: #06B153 !important;
     text-decoration: none;
     font-weight: bold;
 }

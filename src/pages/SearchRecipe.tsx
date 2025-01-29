@@ -96,7 +96,7 @@ const SearchRecipe: React.FC = () => {
                     padding: 4,
                     borderRadius: 4,
                     boxShadow: 3,
-                    height: '70%',
+                    height: '80%',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '20px'

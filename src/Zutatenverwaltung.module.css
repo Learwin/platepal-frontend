@@ -89,7 +89,7 @@
 }
 
 .saveZutatButton {
-  background-color: #4caf50 !important;
+  background-color: #06b153 !important;
   color: white !important;
   font-weight: bold;
   padding: 10px 20px;
@@ -100,5 +100,5 @@
 }
 
 .saveZutatButton:hover {
-  background-color: #45a049 !important;
+  background-color: #06b153 !important;
 }
